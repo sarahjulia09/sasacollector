@@ -8,6 +8,13 @@
       "when": 1790858811880,
       "tag": "0000_create_expenses_table",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790859979041,
+      "tag": "0001_user_accounts",
+      "breakpoints": true
     }
   ]
 }

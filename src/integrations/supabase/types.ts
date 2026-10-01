@@ -22,6 +22,7 @@ export type Database = {
           due_date: string
           id: string
           paid: boolean
+          user_id: string | null
         }
         Insert: {
           amount: number
@@ -30,6 +31,7 @@ export type Database = {
           due_date: string
           id?: string
           paid?: boolean
+          user_id?: string | null
         }
         Update: {
           amount?: number
@@ -38,6 +40,25 @@ export type Database = {
           due_date?: string
           id?: string
           paid?: boolean
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          username?: string
         }
         Relationships: []
       }
