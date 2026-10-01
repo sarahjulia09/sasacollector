@@ -346,7 +346,7 @@ function Index() {
                             : "text-primary hover:bg-secondary"
                         }`}
                       >
-                        {e.paid ? "Reabrir" : "Pago"}
+                        {e.paid ? "Reabrir" : "Marcar pago"}
                       </button>
                       <button
                         onClick={() => removeExpense.mutate(e.id)}
