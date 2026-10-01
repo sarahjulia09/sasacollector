@@ -135,7 +135,8 @@ export function formatDateParts(iso: string): { day: string; monthShort: string;
 
 /** Days from today until the date (negative = overdue). */
 export function daysUntil(iso: string, today = new Date()): number {
-  const [y, m, d] = iso.split("-").map(Number);
+  const [ys, ms, ds] = iso.split("-");
+  const y = Number(ys), m = Number(ms), d = Number(ds);
   const target = new Date(y, m - 1, d);
   const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   return Math.round((target.getTime() - start.getTime()) / 86_400_000);
