@@ -119,12 +119,14 @@ function AppPage() {
 
   const expenses = expensesQuery.data ?? [];
 
-  const { pendingTotal, overdue, soon, pendingCount } = useMemo(() => {
+  const { pendingTotal, overdue, soon, pendingCoun, totalGasto } = useMemo(() => {
     const today = new Date();
     const pending = expenses.filter((e) => !e.paid);
     let overdueSum = 0;
     let overdueCount = 0;
     let soonSum = 0;
+
+    const totalsum = expenses.reduce((acc, e) => acc + (e.amount || 0), 0);
     for (const e of pending) {
       const { tone } = dueLabel(e.due_date, today);
       if (tone === "overdue") {
@@ -139,6 +141,7 @@ function AppPage() {
       overdue: { sum: overdueSum, count: overdueCount },
       soon: { sum: soonSum },
       pendingCount: pending.length,
+      totalGasto: totalsum
     };
   }, [expenses]);
 
@@ -269,7 +272,7 @@ function AppPage() {
               Total 
             </p>
             <p className="mt-1 font-display text-2xl font-semibold text-primary">
-              {formatBRL(Total)}
+              {formatBRL(totalGasto)}
             </p>
           </div>
         </section>
