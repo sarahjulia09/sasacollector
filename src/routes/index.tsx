@@ -7,12 +7,12 @@ export const Route = createFileRoute("/")({
       { title: "sasa collector — gastos e prazos" },
       {
         name: "description",
-        content: "Anote gastos no formato item - valor - prazo e veja sempre o que está pendente, ordenado por vencimento.",
+        content: "Anote gastos no formato item - valor - prazo e veja o que está pendente, ordenado por vencimento.",
       },
-      { property: "og:title", content: "sasa collector — gastos e prazos" },
+      { property: "og:title", content: "sasa collector" },
       {
         property: "og:description",
-        content: "Anote gastos no formato item - valor - prazo e veja sempre o que está pendente.",
+        content: "Criado para organizarmos nossos gastos com álbuns e homens de papel.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -51,7 +51,7 @@ function missingHint(missing: Array<"description" | "amount" | "dueDate">): stri
   const labels = missing.map((m) =>
     m === "description" ? "item" : m === "amount" ? "valor" : "prazo",
   );
-  return `Falta identificar: ${labels.join(", ")}. Ex.: Aluguel - R$ 1.200,00 - 10/11`;
+  return `Falta identificar: ${labels.join(", ")}. Ex.: Changbin ATE - 32 - 10/11`;
 }
 
 function AppPage() {
@@ -207,7 +207,7 @@ function AppPage() {
               setInput(e.target.value);
               setError(null);
             }}
-            placeholder="Aluguel - R$ 1.200,00 - 10/11"
+            placeholder="Changbin ATE - 32 - 10/11"
             autoComplete="off"
             className="w-full rounded-xl border border-input bg-background px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30"
           />
