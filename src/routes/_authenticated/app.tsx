@@ -119,7 +119,7 @@ function AppPage() {
 
   const expenses = expensesQuery.data ?? [];
 
-  const { pendingTotal, overdue, soon, pendingCoun, totalGasto } = useMemo(() => {
+  const { pendingTotal, overdue, soon, pendingCount, totalGasto } = useMemo(() => {
     const today = new Date();
     const pending = expenses.filter((e) => !e.paid);
     let overdueSum = 0;
