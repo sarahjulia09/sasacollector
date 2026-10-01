@@ -129,7 +129,7 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
               inputMode="numeric"
               value={pin}
               onChange={(e) => { setPin(e.target.value.replace(/\D/g, "").slice(0, 4)); setError(null); }}
-              placeholder="4 dígitos"
+              placeholder="ex:1903"
               autoComplete={mode === "signup" ? "new-password" : "current-password"}
               className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-base tracking-[0.5em] text-foreground placeholder:tracking-normal placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30"
             />

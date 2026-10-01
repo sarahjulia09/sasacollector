@@ -13,7 +13,7 @@ import {
 export const Route = createFileRoute("/_authenticated/app")({
   head: () => ({
     meta: [
-      { title: "sasa collector." },
+      { title: "sasa collector" },
       {
         name: "description",
         content: "Criado para organizar seus gastos com álbuns e homens de papel.",
