@@ -156,10 +156,10 @@ function Index() {
         <header className="flex items-baseline justify-between">
           <div>
             <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground">
-              Clareza
+              sasa collector 
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Gastos e prazos, sempre à vista.
+              all you need is love, dream$ and $kz
             </p>
           </div>
           <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
@@ -271,7 +271,7 @@ function Index() {
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
                 Use o formato <span className="font-medium text-foreground">item - valor - prazo</span> para
-                adicionar, como em "Luz - 89,90 - 15/11".
+                adicionar, como em "binnie do it - 14,90 - 15/11".
               </p>
             </div>
           ) : (
