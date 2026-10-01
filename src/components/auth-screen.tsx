@@ -43,6 +43,9 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
           if (/already|registered|exists/i.test(err.message)) {
             throw new Error("Já existe uma conta com esse nome. Tente entrar.");
           }
+          if (/weak|easy to guess|leaked/i.test(err.message)) {
+            throw new Error("Essa senha é muito comum. Escolha outra mais forte.");
+          }
           throw new Error(err.message);
         }
         if (data.user) {
