@@ -120,7 +120,8 @@ export function formatBRL(n: number): string {
 
 /** Formats a yyyy-mm-dd date without timezone surprises. */
 export function formatDateParts(iso: string): { day: string; monthShort: string; full: string } {
-  const [y, m, d] = iso.split("-").map(Number);
+  const [ys, ms, ds] = iso.split("-");
+  const y = Number(ys), m = Number(ms), d = Number(ds);
   const date = new Date(y, m - 1, d);
   const monthShort = date
     .toLocaleDateString("pt-BR", { month: "short" })
