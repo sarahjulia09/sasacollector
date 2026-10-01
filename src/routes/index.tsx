@@ -155,7 +155,7 @@ function Index() {
       <main className="mx-auto w-full max-w-2xl px-4 pb-20 pt-10 sm:pt-14">
         <header className="flex items-baseline justify-between">
           <div>
-            <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground">
+            <h1 className="font-display text-4xl font-semibold tracking-tight text-primary">
               sasa collector 
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -215,7 +215,7 @@ function Index() {
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Total pendente
             </p>
-            <p className="mt-1 font-display text-2xl font-semibold text-foreground">
+            <p className="mt-1 font-display text-2xl font-semibold text-primary">
               {formatBRL(pendingTotal)}
             </p>
           </div>
@@ -251,7 +251,7 @@ function Index() {
               onClick={() => setFilter(f.key)}
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 filter === f.key
-                  ? "bg-foreground text-background"
+                  ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground hover:bg-accent"
               }`}
             >
