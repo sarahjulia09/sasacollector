@@ -11,13 +11,17 @@ export function normalizeUsername(raw: string): string | null {
 
 const emailFor = (username: string) => `${username}@app.local`;
 
+/** O PIN de 4 dígitos é transformado em uma credencial longa para o auth. */
+const credentialFor = (username: string, pin: string) =>
+  `sasa::${username}::${pin}::collector`;
+
 type Mode = "signin" | "signup";
 
 export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>(initialMode);
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const submit = useMutation({
@@ -28,10 +32,11 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
           "Use 3 a 24 caracteres: letras, números, ponto, hífen ou _ (sem espaços).",
         );
       }
-      if (password.length < 6) {
-        throw new Error("A senha precisa de pelo menos 6 caracteres.");
+      if (!/^\d{4}$/.test(pin)) {
+        throw new Error("O PIN precisa ter exatamente 4 dígitos.");
       }
       const email = emailFor(normalized);
+      const password = credentialFor(normalized, pin);
 
       if (mode === "signup") {
         const { data, error: err } = await supabase.auth.signUp({
@@ -42,9 +47,6 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
         if (err) {
           if (/already|registered|exists/i.test(err.message)) {
             throw new Error("Já existe uma conta com esse nome. Tente entrar.");
-          }
-          if (/weak|easy to guess|leaked/i.test(err.message)) {
-            throw new Error("Essa senha é muito comum. Escolha outra mais forte.");
           }
           throw new Error(err.message);
         }
@@ -62,7 +64,7 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
 
       const { error: err } = await supabase.auth.signInWithPassword({ email, password });
       if (err) {
-        throw new Error("Nome de usuário ou senha incorretos.");
+        throw new Error("Nome de usuário ou PIN incorretos.");
       }
     },
     onSuccess: () => {
@@ -118,17 +120,18 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
             />
           </div>
           <div>
-            <label htmlFor="password" className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Senha
+            <label htmlFor="pin" className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              PIN
             </label>
             <input
-              id="password"
+              id="pin"
               type="password"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setError(null); }}
-              placeholder="mínimo 6 caracteres"
+              inputMode="numeric"
+              value={pin}
+              onChange={(e) => { setPin(e.target.value.replace(/\D/g, "").slice(0, 4)); setError(null); }}
+              placeholder="4 dígitos"
               autoComplete={mode === "signup" ? "new-password" : "current-password"}
-              className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-base text-foreground placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30"
+              className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-base tracking-[0.5em] text-foreground placeholder:tracking-normal placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30"
             />
           </div>
           {error && <p className="text-xs text-destructive">{error}</p>}
