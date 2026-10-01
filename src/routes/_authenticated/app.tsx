@@ -264,6 +264,14 @@ function AppPage() {
               {soon.sum > 0 ? formatBRL(soon.sum) : "—"}
             </p>
           </div>
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Total 
+            </p>
+            <p className="mt-1 font-display text-2xl font-semibold text-primary">
+              {formatBRL(Total)}
+            </p>
+          </div>
         </section>
 
         {/* Filters */}
