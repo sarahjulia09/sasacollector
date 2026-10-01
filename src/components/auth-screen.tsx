@@ -48,9 +48,6 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
           if (/already|registered|exists/i.test(err.message)) {
             throw new Error("Já existe uma conta com esse nome. Tente entrar.");
           }
-          if (/weak|easy to guess|leaked/i.test(err.message)) {
-            throw new Error("Essa senha é muito comum. Escolha outra mais forte.");
-          }
           throw new Error(err.message);
         }
         if (data.user) {
@@ -67,7 +64,7 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
 
       const { error: err } = await supabase.auth.signInWithPassword({ email, password });
       if (err) {
-        throw new Error("Nome de usuário ou senha incorretos.");
+        throw new Error("Nome de usuário ou PIN incorretos.");
       }
     },
     onSuccess: () => {
@@ -123,17 +120,18 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
             />
           </div>
           <div>
-            <label htmlFor="password" className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Senha
+            <label htmlFor="pin" className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              PIN
             </label>
             <input
-              id="password"
+              id="pin"
               type="password"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setError(null); }}
-              placeholder="mínimo 6 caracteres"
+              inputMode="numeric"
+              value={pin}
+              onChange={(e) => { setPin(e.target.value.replace(/\D/g, "").slice(0, 4)); setError(null); }}
+              placeholder="4 dígitos"
               autoComplete={mode === "signup" ? "new-password" : "current-password"}
-              className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-base text-foreground placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30"
+              className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-base tracking-[0.5em] text-foreground placeholder:tracking-normal placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30"
             />
           </div>
           {error && <p className="text-xs text-destructive">{error}</p>}
