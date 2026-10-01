@@ -11,13 +11,17 @@ export function normalizeUsername(raw: string): string | null {
 
 const emailFor = (username: string) => `${username}@app.local`;
 
+/** O PIN de 4 dígitos é transformado em uma credencial longa para o auth. */
+const credentialFor = (username: string, pin: string) =>
+  `sasa::${username}::${pin}::collector`;
+
 type Mode = "signin" | "signup";
 
 export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>(initialMode);
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const submit = useMutation({
@@ -28,10 +32,11 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
           "Use 3 a 24 caracteres: letras, números, ponto, hífen ou _ (sem espaços).",
         );
       }
-      if (password.length < 6) {
-        throw new Error("A senha precisa de pelo menos 6 caracteres.");
+      if (!/^\d{4}$/.test(pin)) {
+        throw new Error("O PIN precisa ter exatamente 4 dígitos.");
       }
       const email = emailFor(normalized);
+      const password = credentialFor(normalized, pin);
 
       if (mode === "signup") {
         const { data, error: err } = await supabase.auth.signUp({
