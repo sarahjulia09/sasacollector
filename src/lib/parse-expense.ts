@@ -66,7 +66,7 @@ export function parseDueDate(raw: string, today = new Date()): string | null {
   // ISO yyyy-mm-dd
   let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
   if (m) {
-    const [, y, mo, d] = m;
+    const y = m[1]!, mo = m[2]!, d = m[3]!;
     return `${y}-${mo.padStart(2, "0")}-${d.padStart(2, "0")}`;
   }
 
