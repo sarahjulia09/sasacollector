@@ -1,18 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AuthScreen } from "@/components/auth-screen";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "sasa collector — gastos e prazos" },
+      { title: "sasa collector — Entrar" },
       {
         name: "description",
-        content: "Anote gastos no formato item - valor - prazo e veja sempre o que está pendente, ordenado por vencimento.",
+        content: "Entre com seu nome de usuário para anotar gastos e ver o que está pendente.",
       },
-      { property: "og:title", content: "sasa collector — gastos e prazos" },
+      { property: "og:title", content: "sasa collector — Entrar" },
       {
         property: "og:description",
-        content: "Anote gastos no formato item - valor - prazo e veja sempre o que está pendente.",
+        content: "Entre com seu nome de usuário para anotar gastos e ver o que está pendente.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
