@@ -78,13 +78,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Clareza — Gastos e prazos" },
+      { title: "sasa collector — gastos e prazos" },
       {
         name: "description",
         content:
           "Anote gastos no formato item - valor - prazo e veja sempre o que está pendente, ordenado por vencimento.",
       },
-      { property: "og:title", content: "Clareza — Gastos e prazos" },
+      { property: "og:title", content: "sasa collector — gastos e prazos" },
       {
         property: "og:description",
         content: "Anote gastos no formato item - valor - prazo e veja sempre o que está pendente.",

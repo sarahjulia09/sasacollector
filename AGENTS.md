@@ -11,4 +11,4 @@
 
 ## Architecture decisions
 
-- `public.expenses` is a single-user personal table with `anon` full-access RLS (no auth in this app). Do not add auth-gated policies or assume a logged-in user; keep all access through the browser Supabase client.
+- Multi-user app behind the `_authenticated` route gate. Login is username-only: derive the deterministic synthetic email `<normalized-username>@app.local` for all auth calls, keep the username unique in `public.profiles`, and display it from `user.user_metadata.username`. `public.expenses` is RLS-scoped to `auth.uid() = user_id`; every insert must set `user_id` from the session user. Never add a public/anon policy on `expenses` or `profiles`, and keep all access through the browser Supabase client.
