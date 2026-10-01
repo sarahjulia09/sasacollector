@@ -13,15 +13,15 @@ import {
 export const Route = createFileRoute("/_authenticated/app")({
   head: () => ({
     meta: [
-      { title: "sasa collector — gastos e prazos" },
+      { title: "sasa collector." },
       {
         name: "description",
-        content: "Anote gastos no formato item - valor - prazo e veja sempre o que está pendente, ordenado por vencimento.",
+        content: "Criado para organizar seus gastos com álbuns e homens de papel.",
       },
-      { property: "og:title", content: "sasa collector — gastos e prazos" },
+      { property: "og:title", content: "sasa collector" },
       {
         property: "og:description",
-        content: "Anote gastos no formato item - valor - prazo e veja sempre o que está pendente.",
+        content: "Criado para organizar seus gastos com álbuns e homens de papel.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

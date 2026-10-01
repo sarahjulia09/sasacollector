@@ -78,16 +78,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "sasa collector — gastos e prazos" },
+      { title: "sasa collector" },
       {
         name: "description",
         content:
-          "Anote gastos no formato item - valor - prazo e veja sempre o que está pendente, ordenado por vencimento.",
+          "Criado para organizar seus gastos com álbuns e homens de papel.",
       },
-      { property: "og:title", content: "sasa collector — gastos e prazos" },
+      { property: "og:title", content: "sasa collector" },
       {
         property: "og:description",
-        content: "Anote gastos no formato item - valor - prazo e veja sempre o que está pendente.",
+        content: "Criado para organizar seus gastos com álbuns e homens de papel.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
