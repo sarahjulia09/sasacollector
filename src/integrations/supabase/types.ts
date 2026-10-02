@@ -14,13 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      collection_eras: {
+        Row: {
+          created_at: string
+          group_id: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          group_id: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          group_id?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_eras_group_id_user_id_fkey"
+            columns: ["group_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "collection_groups"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
+      collection_groups: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number
           created_at: string
           description: string
           due_date: string
+          era_id: string | null
+          group_id: string | null
           id: string
+          item_detail: string | null
+          item_type: string | null
+          origin: string | null
           paid: boolean
           user_id: string | null
         }
@@ -29,7 +90,12 @@ export type Database = {
           created_at?: string
           description: string
           due_date: string
+          era_id?: string | null
+          group_id?: string | null
           id?: string
+          item_detail?: string | null
+          item_type?: string | null
+          origin?: string | null
           paid?: boolean
           user_id?: string | null
         }
@@ -38,11 +104,31 @@ export type Database = {
           created_at?: string
           description?: string
           due_date?: string
+          era_id?: string | null
+          group_id?: string | null
           id?: string
+          item_detail?: string | null
+          item_type?: string | null
+          origin?: string | null
           paid?: boolean
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expenses_era_owner_group_fk"
+            columns: ["era_id", "user_id", "group_id"]
+            isOneToOne: false
+            referencedRelation: "collection_eras"
+            referencedColumns: ["id", "user_id", "group_id"]
+          },
+          {
+            foreignKeyName: "expenses_group_owner_fk"
+            columns: ["group_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "collection_groups"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
       }
       profiles: {
         Row: {
