@@ -1,0 +1,4 @@
+- [ ] Criar painel com métricas gerais e grade de grupos com contagens e totais.
+- [ ] Criar página de grupo com itens por era, etiquetas e controles de pagamento.
+- [ ] Criar formulário estruturado para item, grupo, era, tipo, detalhe, origem, valor e prazo.
+- [ ] Preservar acesso aos gastos antigos sem grupo e validar navegação e cadastro.

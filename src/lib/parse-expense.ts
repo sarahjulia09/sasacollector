@@ -12,7 +12,8 @@ export type ParseResult =
 export function parseAmount(raw: string): number | null {
   let s = raw.trim();
   if (!s) return null;
-  s = s.replace(/[r$]\s*/gi, "").replace(/\s/g, "");
+  s = s.replace(/^(?:r\$\s*)?/i, "").replace(/\s*(?:reais|real)\s*$/i, "").replace(/\s/g, "");
+  if (!/^[\d.,]+$/.test(s)) return null;
   if (!s) return null;
 
   const hasComma = s.includes(",");
