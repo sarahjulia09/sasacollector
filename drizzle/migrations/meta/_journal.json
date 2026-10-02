@@ -15,6 +15,13 @@
       "when": 1790859979041,
       "tag": "0001_user_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790957446199,
+      "tag": "0002_add_collection_binders_and_eras",
+      "breakpoints": true
     }
   ]
 }
