@@ -110,6 +110,10 @@ export function presetErasFor(groupName: string) {
   return PRESET_ERAS[slugify(groupName)] ?? [];
 }
 
+export function presetVersionsFor(groupName: string, eraName: string) {
+  return PRESET_VERSIONS[slugify(groupName)]?.[eraName] ?? [];
+}
+
 export function presetPopupsFor(groupName: string) {
   return PRESET_POPUPS[slugify(groupName)] ?? [];
 }

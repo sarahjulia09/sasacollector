@@ -5,7 +5,7 @@ import { Plus, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { parseAmount } from "@/lib/parse-expense";
-import { presetErasFor, presetPopupsFor, presetFanmeetingsFor, presetToursFor, slugify, type Group, type Era, type Item } from "@/lib/collection";
+import { presetErasFor, presetVersionsFor, presetPopupsFor, presetFanmeetingsFor, presetToursFor, slugify, type Group, type Era, type Item } from "@/lib/collection";
 
 type ItemType = "Álbum PC" | "POB" | "Lucky Draw" | "Merch";
 const TYPES: ItemType[] = ["Álbum PC", "POB", "Lucky Draw", "Merch"];
@@ -37,6 +37,7 @@ export function CollectionForm({ userId, groups, eras, initialGroupId, item, onC
   const [amount, setAmount] = useState(item ? String(item.amount).replace(".", ",") : "");
   const [dueDate, setDueDate] = useState(item?.due_date ?? "");
   const [error, setError] = useState("");
+  const [albumVersion, setAlbumVersion] = useState("");
 
   const selectedGroup = groups.find((g) => g.id === groupId);
   const groupName = groupId === "new" ? newGroup : selectedGroup?.name ?? "";
@@ -44,6 +45,13 @@ export function CollectionForm({ userId, groups, eras, initialGroupId, item, onC
   const existingNames = new Set(existingEras.map((e) => e.name.toLowerCase()));
   const notYetSaved = (list: string[]) => list.filter((n) => !existingNames.has(n.toLowerCase()));
   const presets = notYetSaved(presetErasFor(groupName));
+
+// 1. Mova a definição do eraName para aqui cima
+  const eraName = eraValue === "new" ? newEra
+  : eraValue.startsWith("preset:") ? eraValue.slice(7)
+  : existingEras.find((e) => e.id === eraValue)?.name ?? "";
+// 2. Agora já pode usar o eraName para ir buscar as versões corretas
+  const versionsPresets = notYetSaved(presetVersionsFor(groupName, eraName));
   const popupPresets = notYetSaved(presetPopupsFor(groupName));
   const fanmeetingPresets = notYetSaved(presetFanmeetingsFor(groupName));
   const tourPresets = notYetSaved(presetToursFor(groupName));
@@ -106,8 +114,7 @@ export function CollectionForm({ userId, groups, eras, initialGroupId, item, onC
           </select></label>
           {eraValue === "new" && <label className={label}>Nova era<input required maxLength={80} value={newEra} onChange={(e) => setNewEra(e.target.value)} placeholder="Ex.: ATE" className={input} /></label>}
           <label className={label}>Tipo de item<select value={itemType} onChange={(e) => setItemType(e.target.value as ItemType)} className={input}>{TYPES.map((t) => <option key={t}>{t}</option>)}</select></label>
-          {itemType !== "Merch" && <label className={label}>{itemType === "Álbum PC" ? "Versão do álbum" : "Descrição"}<select className={input} value={albumVersion} onChange={(e) => setAlbumVersion(e.target.value)}><option value="">Selecione a versão</option>{groupId && eraValue && PRESET_VERSIONS[groupId]?.[eraValue]?.map((version) => (<option key={version} value={version}>{version}</option>))}</select></label>}
-          <label className={label}>Origem / Comunidade / CEG<input maxLength={120} value={origin} onChange={(e) => setOrigin(e.target.value)} placeholder="Ex.: CEG Coreia" className={input} /></label>
+          {itemType !== "Merch" && <label className={label}>{itemType === "Álbum PC" ? "Versão do álbum" : "Descrição"}<select className={input} value={version} onChange={(e) => setVersion(e.target.value)}><option value="">Selecione a versão</option>{versionsPresets.map((v) => (<option key={v} value={v}>{v}</option>))}</select></label>}          <label className={label}>Origem / Comunidade / CEG<input maxLength={120} value={origin} onChange={(e) => setOrigin(e.target.value)} placeholder="Ex.: CEG Coreia" className={input} /></label>
           <label className={label}>Valor (R$)<input required inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Ex.: 13,50 reais" className={input} /></label>
           <label className={label}>Data / Prazo de pagamento<input required type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className={input} /></label>
           {error && <p role="alert" className="text-sm text-destructive sm:col-span-2">{error}</p>}
