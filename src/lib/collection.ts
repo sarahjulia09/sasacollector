@@ -112,6 +112,8 @@ export const PRESET_VERSIONS: Record<string, Record<string, string[]>> = {
 export const PRESET_POPUPS: Record<string, string[]> = {
   "stray-kids": [
     "SKZOO EVERYWHERE ALL AROUND THE WORLD",
+    "Stray Kids World Tour POPUP STORE",
+    "Do It Pop-Up Store",
     "SKZOO Magic School",
     "HOP",
     "ATE",
