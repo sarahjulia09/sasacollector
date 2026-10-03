@@ -110,7 +110,55 @@ export function CollectionForm({ userId, groups, eras, initialGroupId, item, onC
           </select></label>
           {eraValue === "new" && <label className={label}>Nova era<input required maxLength={80} value={newEra} onChange={(e) => setNewEra(e.target.value)} placeholder="Ex.: ATE" className={input} /></label>}
           <label className={label}>Tipo de item<select value={itemType} onChange={(e) => setItemType(e.target.value as ItemType)} className={input}>{TYPES.map((t) => <option key={t}>{t}</option>)}</select></label>
-          {itemType !== "Merch" && <label className={label}>{itemType === "Álbum PC" ? "Versão do álbum" : "Descrição"}{itemType === "Álbum PC" ? <select className={input} value={detail} onChange={(e) => setDetail(e.target.value)}><option value="">Selecione a versão</option>{versionsPresets?.map((version) => (<option key={version} value={version}>{version}</option>))}</select> : <input type="text" className={input} value={detail} onChange={(e) => setDetail(e.target.value)} />}</label>}          <label className={label}>Data / Prazo de pagamento<input required type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className={input} /></label>
+          {itemType !== "Merch" && (
+            <label className={label}>
+              {itemType === "Álbum PC" ? "Versão do álbum" : "Descrição"}
+              {itemType === "Álbum PC" ? (
+                <select className={input} value={detail} onChange={(e) => setDetail(e.target.value)}>
+                  <option value="">Selecione a versão</option>
+                  {versionsPresets?.map((version) => (
+                    <option key={version} value={version}>{version}</option>
+                  ))}
+                </select>
+              ) : (
+                <input type="text" className={input} value={detail} onChange={(e) => setDetail(e.target.value)} />
+              )}
+            </label>
+          )}
+
+          <label className={label}>
+            Origem / Comunidade / CEG
+            <input
+              maxLength={120}
+              value={origin}
+              onChange={(e) => setOrigin(e.target.value)}
+              placeholder="Ex.: CEG Coreia"
+              className={input}
+            />
+          </label>
+
+          <label className={label}>
+            Valor (R$)
+            <input
+              required
+              inputMode="decimal"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="Ex.: 13,50"
+              className={input}
+            />
+          </label>
+
+          <label className={label}>
+            Data / Prazo de pagamento
+            <input
+              required
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className={input}
+            />
+          </label>
           {error && <p role="alert" className="text-sm text-destructive sm:col-span-2">{error}</p>}
           <div className="flex justify-end gap-2 pt-2 sm:col-span-2"><Button type="button" variant="outline" onClick={onClose}>Cancelar</Button><Button type="submit" disabled={mutation.isPending}>{editing ? <Save /> : <Plus />}{mutation.isPending ? "Salvando…" : editing ? "Salvar alterações" : "Adicionar item"}</Button></div>
         </form>
