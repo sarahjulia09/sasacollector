@@ -19,6 +19,50 @@ export const PRESET_ERAS: Record<string, string[]> = {
     "Love & P1ece : The Best of P1Harmony",
   ],
 };
+/** Versões dos álbuns pré-definidas. */
+export const PRESET_VERSIONS: Record<string, Record<string, string[]>> = {
+  "stray-kids": {
+    "THIS & THAT": ["THIS Ver.", "THAT Ver.", "TRUCK Ver.", "FANS Ver.", "& Ver."],
+    "HOLLOW": ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "FC Member Ver."],
+    "KARMA": ["Karma Ver.", "Accident Ver."],
+    "HOP": ["SKZHOP Ver.", "ACCORDION Ver.", "Platform Album NEMO Ver."],
+    "GIANT": ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "Member Ver."],
+    "ATE": ["Ate Ver.", "Chk Chk Ver.", "Boom Ver.", "Accordion Ver.", "Letter Ver.", "Platform Album NEMO Ver."],
+    "ROCK-STAR": ["ROCK Ver.", "STAR Ver.", "POSTCARD Ver.", "LIMITED STAR Ver.", "HEADLINER Ver."],
+    "SOCIAL PATH": ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "FC Member Ver."],
+    "5-STAR": ["VER. A", "VER. B", "VER. C", "LIMITED VER.", "DIGIPACK Ver."],
+    "THE SOUND": ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "FC Member Ver."],
+    "MAXIDENT": ["T-CRUSH Ver.", "HEART Ver.", "GO Ver. (Limited)", "CASE Ver."],
+    "CIRCUS": ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "FC Member Ver."],
+    "ODDINARY": ["SCANNING Ver.", "MASK OFF Ver.", "FRANKENSTEIN Ver. (Limited)", "JEWEL CASE Ver."],
+    "Christmas EveL": ["Limited Ver.", "Standard Ver."],
+    "NOEASY": ["A Type", "B Type", "Limited Ver.", "Jewel Case Ver."],
+    "SKZ2021": ["Digital Album"],
+    "ALL IN": ["Limited Ver. A", "Limited Ver. B", "Limited Ver. C", "Regular Ver."],
+    "IN LIFE": ["A Type", "B Type"],
+    "GO LIVE": ["A Type", "B Type", "C Type", "Limited Ver."],
+    "Clé : LEVANTER": ["CLE Ver.", "LEVANTER Ver.", "Limited Ver."],
+    "Clé 2 : Yellow Wood": ["CLE Ver.", "YELLOW WOOD Ver.", "Limited Ver."],
+    "Clé 1 : MIROH": ["MIROH Ver.", "CLE Ver.", "Limited Ver."],
+    "I am YOU": ["I am Ver.", "YOU Ver."],
+    "I am WHO": ["I am Ver.", "WHO Ver."],
+    "I am NOT": ["I am Ver.", "NOT Ver."],
+    "Mixtape": ["Standard Ver."]
+  },
+  "p1harmony": {
+    "UNIQUE JAPAN EDITION": ["A Ver.", "B Ver.", "C Ver."],
+    "UNIQUE": ["A Ver.", "B Ver.", "C Ver.", "Compact Ver.", "Light Ver.", "FaNCy Ver."],
+    "DUH!": ["D Ver.", "U Ver.", "H Ver.", "Compact Ver.", "PLVE Ver.", "Nemo Ver."],
+    "SAD SONG": ["SAD Ver.", "SONG Ver.", "Platform Album NEMO Ver."],
+    "Killin' It": ["Super Ver.", "Main Ver.", "Platform Album NEMO Ver."],
+    "HARMONY : SET IN": ["SET IN Ver.", "STEP IN Ver.", "GROW IN Ver."],
+    "HARMONY : ALL IN": ["ALL IN Ver.", "FLOW IN Ver.", "STAY IN Ver."],
+    "DISHARMONY : FIND OUT": ["FIND OUT Ver.", "WORLD Ver.", "TRACK Ver."],
+    "DISHARMONY : BREAK OUT": ["BREAK OUT Ver.", "FREAK OUT Ver."],
+    "DISHARMONY : STAND OUT": ["STAND OUT Ver."],
+    "Love & P1ece : The Best of P1Harmony": ["Standard Ver."]
+  }
+}
 
 /** Pop-up stores por grupo, do mais recente para o mais antigo. */
 export const PRESET_POPUPS: Record<string, string[]> = {
