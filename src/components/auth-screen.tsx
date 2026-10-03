@@ -12,8 +12,7 @@ export function normalizeUsername(raw: string): string | null {
 const emailFor = (username: string) => `${username}@app.local`;
 
 /** O PIN de 4 dígitos é transformado em uma credencial longa para o auth. */
-const credentialFor = (username: string, pin: string) =>
-  `sasa::${username}::${pin}::collector`;
+const credentialFor = (username: string, pin: string) => `sasa::${username}::${pin}::collector`;
 
 type Mode = "signin" | "signup";
 
@@ -28,9 +27,7 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
     mutationFn: async () => {
       const normalized = normalizeUsername(username);
       if (!normalized) {
-        throw new Error(
-          "Use 3 a 24 caracteres: letras, números, ponto, hífen ou _ (sem espaços).",
-        );
+        throw new Error("Use 3 a 24 caracteres: letras, números, ponto, hífen ou _ (sem espaços).");
       }
       if (!/^\d{4}$/.test(pin)) {
         throw new Error("O PIN precisa ter exatamente 4 dígitos.");
@@ -81,7 +78,9 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
 
   const tabClass = (active: boolean) =>
     `rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-      active ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"
+      active
+        ? "bg-primary text-primary-foreground"
+        : "bg-secondary text-secondary-foreground hover:bg-accent"
     }`;
 
   return (
@@ -90,28 +89,48 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
         <h1 className="font-display text-3xl font-semibold tracking-tight text-primary">
           sasa collector
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          all you need is love, dream$ and $kz
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">all you need is love, dream$ and $kz</p>
 
         <div className="mt-6 flex gap-2" role="tablist" aria-label="Entrar ou criar conta">
-          <button role="tab" aria-selected={mode === "signin"} className={tabClass(mode === "signin")} onClick={() => { setMode("signin"); setError(null); }}>
+          <button
+            role="tab"
+            aria-selected={mode === "signin"}
+            className={tabClass(mode === "signin")}
+            onClick={() => {
+              setMode("signin");
+              setError(null);
+            }}
+          >
             Entrar
           </button>
-          <button role="tab" aria-selected={mode === "signup"} className={tabClass(mode === "signup")} onClick={() => { setMode("signup"); setError(null); }}>
+          <button
+            role="tab"
+            aria-selected={mode === "signup"}
+            className={tabClass(mode === "signup")}
+            onClick={() => {
+              setMode("signup");
+              setError(null);
+            }}
+          >
             Criar conta
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-3">
           <div>
-            <label htmlFor="username" className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <label
+              htmlFor="username"
+              className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted-foreground"
+            >
               Nome de usuário
             </label>
             <input
               id="username"
               value={username}
-              onChange={(e) => { setUsername(e.target.value); setError(null); }}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                setError(null);
+              }}
               placeholder="ex: binnie"
               autoComplete="username"
               autoCapitalize="none"
@@ -120,7 +139,10 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
             />
           </div>
           <div>
-            <label htmlFor="pin" className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <label
+              htmlFor="pin"
+              className="mb-1 block text-xs font-medium uppercase tracking-wide text-muted-foreground"
+            >
               PIN
             </label>
             <input
@@ -128,7 +150,10 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
               type="password"
               inputMode="numeric"
               value={pin}
-              onChange={(e) => { setPin(e.target.value.replace(/\D/g, "").slice(0, 4)); setError(null); }}
+              onChange={(e) => {
+                setPin(e.target.value.replace(/\D/g, "").slice(0, 4));
+                setError(null);
+              }}
               placeholder="ex: 1903"
               autoComplete={mode === "signup" ? "new-password" : "current-password"}
               className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-base tracking-[0.5em] text-foreground placeholder:tracking-normal placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30"

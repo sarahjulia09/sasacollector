@@ -12,7 +12,10 @@ export type ParseResult =
 export function parseAmount(raw: string): number | null {
   let s = raw.trim();
   if (!s) return null;
-  s = s.replace(/^(?:r\$\s*)?/i, "").replace(/\s*(?:reais|real)\s*$/i, "").replace(/\s/g, "");
+  s = s
+    .replace(/^(?:r\$\s*)?/i, "")
+    .replace(/\s*(?:reais|real)\s*$/i, "")
+    .replace(/\s/g, "");
   if (!/^[\d.,]+$/.test(s)) return null;
   if (!s) return null;
 
@@ -67,12 +70,14 @@ export function parseDueDate(raw: string, today = new Date()): string | null {
   // ISO yyyy-mm-dd
   let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
   if (m) {
-    const y = m[1]!, mo = m[2]!, d = m[3]!;
+    const y = m[1]!,
+      mo = m[2]!,
+      d = m[3]!;
     return `${y}-${mo.padStart(2, "0")}-${d.padStart(2, "0")}`;
   }
 
   // dd/mm or dd/mm/yyyy (also accepts dd.mm.yy)
-  m = s.match(/^(\d{1,2})[/.\-](\d{1,2})(?:[/.\-](\d{2,4}))?$/);
+  m = s.match(/^(\d{1,2})[-/.](\d{1,2})(?:[-/.](\d{2,4}))?$/);
   if (m) {
     const day = Number(m[1]);
     const month = Number(m[2]);
@@ -122,11 +127,11 @@ export function formatBRL(n: number): string {
 /** Formats a yyyy-mm-dd date without timezone surprises. */
 export function formatDateParts(iso: string): { day: string; monthShort: string; full: string } {
   const [ys, ms, ds] = iso.split("-");
-  const y = Number(ys), m = Number(ms), d = Number(ds);
+  const y = Number(ys),
+    m = Number(ms),
+    d = Number(ds);
   const date = new Date(y, m - 1, d);
-  const monthShort = date
-    .toLocaleDateString("pt-BR", { month: "short" })
-    .replace(".", "");
+  const monthShort = date.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
   return {
     day: String(d).padStart(2, "0"),
     monthShort,
@@ -137,15 +142,24 @@ export function formatDateParts(iso: string): { day: string; monthShort: string;
 /** Days from today until the date (negative = overdue). */
 export function daysUntil(iso: string, today = new Date()): number {
   const [ys, ms, ds] = iso.split("-");
-  const y = Number(ys), m = Number(ms), d = Number(ds);
+  const y = Number(ys),
+    m = Number(ms),
+    d = Number(ds);
   const target = new Date(y, m - 1, d);
   const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   return Math.round((target.getTime() - start.getTime()) / 86_400_000);
 }
 
-export function dueLabel(iso: string, today = new Date()): { text: string; tone: "overdue" | "soon" | "later" } {
+export function dueLabel(
+  iso: string,
+  today = new Date(),
+): { text: string; tone: "overdue" | "soon" | "later" } {
   const days = daysUntil(iso, today);
-  if (days < 0) return { text: `atrasado há ${Math.abs(days)} dia${Math.abs(days) === 1 ? "" : "s"}`, tone: "overdue" };
+  if (days < 0)
+    return {
+      text: `atrasado há ${Math.abs(days)} dia${Math.abs(days) === 1 ? "" : "s"}`,
+      tone: "overdue",
+    };
   if (days === 0) return { text: "vence hoje", tone: "soon" };
   if (days === 1) return { text: "vence amanhã", tone: "soon" };
   if (days <= 7) return { text: `vence em ${days} dias`, tone: "soon" };

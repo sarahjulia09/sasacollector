@@ -81,8 +81,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "sasa collector" },
       {
         name: "description",
-        content:
-          "Criado para organizar seus gastos com álbuns e homens de papel.",
+        content: "Criado para organizar seus gastos com álbuns e homens de papel.",
       },
       { property: "og:title", content: "sasa collector" },
       {
