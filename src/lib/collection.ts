@@ -9,12 +9,12 @@ export type Item = Tables<"expenses">;
 /** Eras pré-definidas por grupo (chave = slug do grupo), da mais recente para a mais antiga. */
 export const PRESET_ERAS: Record<string, string[]> = {
   "stray-kids": [
-    "KARMA", "HOP", "GIANT", "ATE", "ROCK-STAR", "SOCIAL PATH", "5-STAR", "THE SOUND", "MAXIDENT",
+    "THIS & THAT","HOLLOW","KARMA", "HOP", "GIANT", "ATE", "ROCK-STAR", "SOCIAL PATH", "5-STAR", "THE SOUND", "MAXIDENT",
     "CIRCUS", "ODDINARY", "Christmas EveL", "NOEASY", "SKZ2021", "ALL IN", "IN LIFE", "GO LIVE",
     "Clé : LEVANTER", "Clé 2 : Yellow Wood", "Clé 1 : MIROH", "I am YOU", "I am WHO", "I am NOT", "Mixtape",
   ],
   "p1harmony": [
-    "UNIQUE", "DUH!", "SAD SONG", "Killin' It", "HARMONY : SET IN", "HARMONY : ALL IN", "HARMONY : ZERO IN",
+    "UNIQUE JAPAN EDITION","UNIQUE", "DUH!", "SAD SONG", "Killin' It", "HARMONY : SET IN", "HARMONY : ALL IN", "HARMONY : ZERO IN",
     "DISHARMONY : FIND OUT", "DISHARMONY : BREAK OUT", "DISHARMONY : STAND OUT",
     "Love & P1ece : The Best of P1Harmony",
   ],
@@ -23,6 +23,7 @@ export const PRESET_ERAS: Record<string, string[]> = {
 /** Pop-up stores por grupo, do mais recente para o mais antigo. */
 export const PRESET_POPUPS: Record<string, string[]> = {
   "stray-kids": [
+    "SKZOO EVERYWHERE ALL AROUND THE WORLD",
     "SKZOO Magic School",
     "HOP",
     "ATE",
