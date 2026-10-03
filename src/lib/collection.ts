@@ -15,22 +15,28 @@ export const PRESET_ERAS: Record<string, string[]> = {
   ],
 };
 
-/** Pop-up stores e fanmeetings por grupo, do mais recente para o mais antigo. */
-export const PRESET_EVENTS: Record<string, string[]> = {
+/** Pop-up stores por grupo, do mais recente para o mais antigo. */
+export const PRESET_POPUPS: Record<string, string[]> = {
   "stray-kids": [
-    "Fanmeeting: STAY in Our Little House",
-    "Fanmeeting: SKZ 5'CLOCK",
-    "Fanmeeting: SKZ TOY WORLD",
-    "Pop-up: SKZOO Magic School",
-    "Pop-up: HOP",
-    "Pop-up: ATE",
-    "Fanmeeting: SKZ'S MAGIC SCHOOL",
-    "Pop-up: THE VICTORY (Japão)",
-    "Pop-up: THE VICTORY",
-    "Fanmeeting: PILOT : FOR ★★★★★",
-    "Fanmeeting: 2nd #LoveSTAY 'SKZ'S CHOCOLATE FACTORY'",
-    "Fanmeeting: STAYing Home Meeting",
-    "Fanmeeting: 1st #LoveSTAY 'SKZ-X'",
+    "SKZOO Magic School",
+    "HOP",
+    "ATE",
+    "THE VICTORY (Japão)",
+    "THE VICTORY",
+  ],
+};
+
+/** Fanmeetings por grupo, do mais recente para o mais antigo. */
+export const PRESET_FANMEETINGS: Record<string, string[]> = {
+  "stray-kids": [
+    "STAY in Our Little House",
+    "SKZ 5'CLOCK",
+    "SKZ TOY WORLD",
+    "SKZ'S MAGIC SCHOOL",
+    "PILOT : FOR ★★★★★",
+    "2nd #LoveSTAY 'SKZ'S CHOCOLATE FACTORY'",
+    "STAYing Home Meeting",
+    "1st #LoveSTAY 'SKZ-X'",
   ],
 };
 
@@ -38,8 +44,12 @@ export function presetErasFor(groupName: string) {
   return PRESET_ERAS[slugify(groupName)] ?? [];
 }
 
-export function presetEventsFor(groupName: string) {
-  return PRESET_EVENTS[slugify(groupName)] ?? [];
+export function presetPopupsFor(groupName: string) {
+  return PRESET_POPUPS[slugify(groupName)] ?? [];
+}
+
+export function presetFanmeetingsFor(groupName: string) {
+  return PRESET_FANMEETINGS[slugify(groupName)] ?? [];
 }
 
 export function useCollection(userId: string) {
