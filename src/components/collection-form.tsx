@@ -54,9 +54,6 @@ export function CollectionForm({ userId, groups, eras, initialGroupId, item, onC
   const popupPresets = notYetSaved(presetPopupsFor(groupName));
   const fanmeetingPresets = notYetSaved(presetFanmeetingsFor(groupName));
   const tourPresets = notYetSaved(presetToursFor(groupName));
-  const eraName = eraValue === "new" ? newEra
-    : eraValue.startsWith("preset:") ? eraValue.slice(7)
-    : existingEras.find((e) => e.id === eraValue)?.name ?? "";
 
   const mutation = useMutation({
     mutationFn: async () => {
