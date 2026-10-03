@@ -6,6 +6,11 @@ export type Group = Tables<"collection_groups">;
 export type Era = Tables<"collection_eras">;
 export type Item = Tables<"expenses">;
 
+export const DEFAULT_GROUPS = [
+  { name: "Stray Kids", slug: "stray-kids" },
+  { name: "P1Harmony", slug: "p1harmony" },
+] as const;
+
 /** Eras pré-definidas por grupo (chave = slug do grupo), da mais recente para a mais antiga. */
 export const PRESET_ERAS: Record<string, string[]> = {
   "stray-kids": [
@@ -126,17 +131,40 @@ export function presetToursFor(groupName: string) {
   return PRESET_TOURS[slugify(groupName)] ?? [];
 }
 
+export async function deleteEraCascade(eraId: string, userId: string) {
+  const { error: expenseError } = await supabase.from("expenses").delete().eq("era_id", eraId).eq("user_id", userId);
+  if (expenseError) throw expenseError;
+
+  const { error: eraError } = await supabase.from("collection_eras").delete().eq("id", eraId).eq("user_id", userId);
+  if (eraError) throw eraError;
+}
+
+export async function deleteGroupCascade(groupId: string, userId: string) {
+  const { error: expensesError } = await supabase.from("expenses").delete().eq("group_id", groupId).eq("user_id", userId);
+  if (expensesError) throw expensesError;
+
+  const { error: erasError } = await supabase.from("collection_eras").delete().eq("group_id", groupId).eq("user_id", userId);
+  if (erasError) throw erasError;
+
+  const { error: groupError } = await supabase.from("collection_groups").delete().eq("id", groupId).eq("user_id", userId);
+  if (groupError) throw groupError;
+}
+
 export function useCollection(userId: string) {
   return useQuery({
     queryKey: ["collection", userId],
     queryFn: async () => {
-      const [g, e, i] = await Promise.all([
-        supabase.from("collection_groups").select("*").order("name"),
+      const { data: groupsData, error: groupsError } = await supabase.from("collection_groups").select("*").order("name");
+      if (groupsError) throw groupsError;
+
+      const groups = groupsData ?? [];
+
+      const [e, i] = await Promise.all([
         supabase.from("collection_eras").select("*").order("name"),
         supabase.from("expenses").select("*").order("due_date"),
       ]);
-      if (g.error || e.error || i.error) throw g.error ?? e.error ?? i.error;
-      return { groups: g.data as Group[], eras: e.data as Era[], items: i.data as Item[] };
+      if (e.error || i.error) throw e.error ?? i.error;
+      return { groups: groups as Group[], eras: e.data as Era[], items: i.data as Item[] };
     },
   });
 }

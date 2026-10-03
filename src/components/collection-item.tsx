@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Pencil, RotateCcw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { type Item, useCollection } from "@/lib/collection";
+import { deleteEraCascade, type Item, useCollection } from "@/lib/collection";
 import { CollectionForm } from "@/components/collection-form";
 import { dueLabel, formatBRL, formatDateParts } from "@/lib/parse-expense";
 
@@ -20,8 +20,22 @@ export function CollectionItem({ item, userId }: { item: Item; userId: string })
   });
   const remove = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("expenses").delete().eq("id", item.id);
-      if (error) throw error;
+      const { error: itemError } = await supabase.from("expenses").delete().eq("id", item.id).eq("user_id", userId);
+      if (itemError) throw itemError;
+
+      if (!item.era_id) return;
+
+      const { data: remaining, error: remainingError } = await supabase
+        .from("expenses")
+        .select("id")
+        .eq("era_id", item.era_id)
+        .eq("user_id", userId)
+        .limit(1);
+
+      if (remainingError) throw remainingError;
+      if (!remaining || remaining.length === 0) {
+        await deleteEraCascade(item.era_id, userId);
+      }
     },
     onSuccess: () => client.invalidateQueries({ queryKey: ["collection", userId] }),
   });
