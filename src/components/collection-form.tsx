@@ -42,7 +42,9 @@ export function CollectionForm({ userId, groups, eras, initialGroupId, item, onC
   const groupName = groupId === "new" ? newGroup : selectedGroup?.name ?? "";
   const existingEras = groupId === "new" ? [] : eras.filter((e) => e.group_id === groupId);
   const existingNames = new Set(existingEras.map((e) => e.name.toLowerCase()));
-  const presets = presetErasFor(groupName).filter((n) => !existingNames.has(n.toLowerCase()));
+  const notYetSaved = (list: string[]) => list.filter((n) => !existingNames.has(n.toLowerCase()));
+  const presets = notYetSaved(presetErasFor(groupName));
+  const eventPresets = notYetSaved(presetEventsFor(groupName));
   const eraName = eraValue === "new" ? newEra
     : eraValue.startsWith("preset:") ? eraValue.slice(7)
     : existingEras.find((e) => e.id === eraValue)?.name ?? "";
@@ -95,6 +97,7 @@ export function CollectionForm({ userId, groups, eras, initialGroupId, item, onC
             <option value="">Selecione</option>
             {existingEras.length > 0 && <optgroup label="Suas eras">{existingEras.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}</optgroup>}
             {presets.length > 0 && <optgroup label="Discografia">{presets.map((n) => <option key={n} value={`preset:${n}`}>{n}</option>)}</optgroup>}
+            {eventPresets.length > 0 && <optgroup label="Pop-ups & fanmeetings">{eventPresets.map((n) => <option key={n} value={`preset:${n}`}>{n}</option>)}</optgroup>}
             <option value="new">+ Outra era</option>
           </select></label>
           {eraValue === "new" && <label className={label}>Nova era<input required maxLength={80} value={newEra} onChange={(e) => setNewEra(e.target.value)} placeholder="Ex.: ATE" className={input} /></label>}
