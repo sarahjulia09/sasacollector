@@ -5,7 +5,7 @@ import { Plus, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { parseAmount } from "@/lib/parse-expense";
-import { presetErasFor, slugify, type Group, type Era, type Item } from "@/lib/collection";
+import { presetErasFor, presetEventsFor, slugify, type Group, type Era, type Item } from "@/lib/collection";
 
 type ItemType = "Álbum PC" | "POB" | "Lucky Draw" | "Merch";
 const TYPES: ItemType[] = ["Álbum PC", "POB", "Lucky Draw", "Merch"];
