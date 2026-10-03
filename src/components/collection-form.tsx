@@ -40,10 +40,30 @@ export function CollectionForm({ userId, groups, eras, initialGroupId, item, onC
 
   const selectedGroup = groups.find((g) => g.id === groupId);
   const groupName = groupId === "new" ? newGroup : selectedGroup?.name ?? "";
-  const existingEras = groupId === "new" ? [] : eras.filter((e) => e.group_id === groupId);
-  const existingNames = new Set(existingEras.map((e) => e.name.toLowerCase()));
-  const notYetSaved = (list: string[]) => list.filter((n) => !existingNames.has(n.toLowerCase()));
-  const presets = notYetSaved(presetErasFor(groupName));
+  // Pega a lista completa de cada categoria sem filtrar/esconder nada
+  const discography = presetErasFor(groupName);
+  const fanmeetings = presetFanmeetingsFor(groupName);
+  const tours = presetToursFor(groupName);
+  const popups = presetPopupsFor(groupName);
+
+  // Lista de nomes de todos os presets conhecidos (em minúsculas)
+  const allPresetNames = new Set([
+    ...discography,
+    ...fanmeetings,
+    ...tours,
+    ...popups,
+  ].map((n) => n.toLowerCase()));
+
+  // "Outras eras" serão apenas as eras manuais que você criou e que NÃO estão nos presets acima
+  const customEras = existingEras.filter((e) => !allPresetNames.has(e.name.toLowerCase()));
+
+  // Função auxiliar para saber qual valor colocar no <option>:
+  // se já existe no banco, usa o ID; se não existe, usa `preset:Nome`
+  function getEraOptionValue(name: string) {
+    const match = existingEras.find((e) => e.name.toLowerCase() === name.toLowerCase());
+    return match ? match.id : `preset:${name}`;
+  }
+
 
 // 1. Mova a definição do eraName para aqui cima
   const eraName = eraValue === "new" ? newEra
@@ -99,7 +119,7 @@ export function CollectionForm({ userId, groups, eras, initialGroupId, item, onC
           <label className={`${label} sm:col-span-2`}>Nome do item / membro<input required maxLength={120} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Ex.: Changbin" className={input} /></label>
           <label className={label}>Grupo<select required value={groupId} onChange={(e) => { setGroupId(e.target.value); setEraValue(""); }} className={input}><option value="">Selecione</option>{groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}<option value="new">+ Criar grupo</option></select></label>
           {groupId === "new" && <label className={label}>Novo grupo<input required maxLength={80} value={newGroup} onChange={(e) => { setNewGroup(e.target.value); setEraValue(""); }} placeholder="Ex.: Stray Kids" className={input} /></label>}
-          <label className={label}>Era / Álbum<select required value={eraValue} onChange={(e) => setEraValue(e.target.value)} className={input} disabled={!groupId}>
+          <label className={label}>Era / Álbum<select required value={eraValue} onChange={(e) => setEraValue(e.target.value)} className={input} disabled={!groupId}><option value="">Selecione</option>{presetErasFor(groupName).length > 0 && <optgroup label="Discografia">{presetErasFor(groupName).map((n) => <option key={n} value={existingEras.find((e) => e.name.toLowerCase() === n.toLowerCase())?.id ?? `preset:${n}`}>{n}</option>)}</optgroup>}{presetFanmeetingsFor(groupName).length > 0 && <optgroup label="Fanmeetings">{presetFanmeetingsFor(groupName).map((n) => <option key={n} value={existingEras.find((e) => e.name.toLowerCase() === n.toLowerCase())?.id ?? `preset:${n}`}>{n}</option>)}</optgroup>}{presetToursFor(groupName).length > 0 && <optgroup label="Turnês">{presetToursFor(groupName).map((n) => <option key={n} value={existingEras.find((e) => e.name.toLowerCase() === n.toLowerCase())?.id ?? `preset:${n}`}>{n}</option>)}</optgroup>}{presetPopupsFor(groupName).length > 0 && <optgroup label="Pop-ups">{presetPopupsFor(groupName).map((n) => <option key={n} value={existingEras.find((e) => e.name.toLowerCase() === n.toLowerCase())?.id ?? `preset:${n}`}>{n}</option>)}</optgroup>}{existingEras.filter((e) => ![...presetErasFor(groupName), ...presetFanmeetingsFor(groupName), ...presetToursFor(groupName), ...presetPopupsFor(groupName)].map((x) => x.toLowerCase()).includes(e.name.toLowerCase())).length > 0 && <optgroup label="Outras eras">{existingEras.filter((e) => ![...presetErasFor(groupName), ...presetFanmeetingsFor(groupName), ...presetToursFor(groupName), ...presetPopupsFor(groupName)].map((x) => x.toLowerCase()).includes(e.name.toLowerCase())).map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}</optgroup>}<option value="new">+ Outra era</option></select></label>
             <option value="">Selecione</option>
             {existingEras.length > 0 && <optgroup label="Suas eras">{existingEras.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}</optgroup>}
             {presets.length > 0 && <optgroup label="Discografia">{presets.map((n) => <option key={n} value={`preset:${n}`}>{n}</option>)}</optgroup>}
