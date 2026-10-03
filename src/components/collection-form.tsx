@@ -5,7 +5,7 @@ import { Plus, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { parseAmount } from "@/lib/parse-expense";
-import { presetErasFor, presetPopupsFor, presetFanmeetingsFor, slugify, type Group, type Era, type Item } from "@/lib/collection";
+import { presetErasFor, presetPopupsFor, presetFanmeetingsFor, presetToursFor, slugify, type Group, type Era, type Item } from "@/lib/collection";
 
 type ItemType = "Álbum PC" | "POB" | "Lucky Draw" | "Merch";
 const TYPES: ItemType[] = ["Álbum PC", "POB", "Lucky Draw", "Merch"];
@@ -46,6 +46,7 @@ export function CollectionForm({ userId, groups, eras, initialGroupId, item, onC
   const presets = notYetSaved(presetErasFor(groupName));
   const popupPresets = notYetSaved(presetPopupsFor(groupName));
   const fanmeetingPresets = notYetSaved(presetFanmeetingsFor(groupName));
+  const tourPresets = notYetSaved(presetToursFor(groupName));
   const eraName = eraValue === "new" ? newEra
     : eraValue.startsWith("preset:") ? eraValue.slice(7)
     : existingEras.find((e) => e.id === eraValue)?.name ?? "";
@@ -99,6 +100,7 @@ export function CollectionForm({ userId, groups, eras, initialGroupId, item, onC
             {existingEras.length > 0 && <optgroup label="Suas eras">{existingEras.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}</optgroup>}
             {presets.length > 0 && <optgroup label="Discografia">{presets.map((n) => <option key={n} value={`preset:${n}`}>{n}</option>)}</optgroup>}
             {fanmeetingPresets.length > 0 && <optgroup label="Fanmeetings">{fanmeetingPresets.map((n) => <option key={n} value={`preset:${n}`}>{n}</option>)}</optgroup>}
+            {tourPresets.length > 0 && <optgroup label="Turnês">{tourPresets.map((n) => <option key={n} value={`preset:${n}`}>{n}</option>)}</optgroup>}
             {popupPresets.length > 0 && <optgroup label="Pop-ups">{popupPresets.map((n) => <option key={n} value={`preset:${n}`}>{n}</option>)}</optgroup>}
             <option value="new">+ Outra era</option>
           </select></label>

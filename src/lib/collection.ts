@@ -13,6 +13,11 @@ export const PRESET_ERAS: Record<string, string[]> = {
     "CIRCUS", "ODDINARY", "Christmas EveL", "NOEASY", "SKZ2021", "ALL IN", "IN LIFE", "GO LIVE",
     "Clé : LEVANTER", "Clé 2 : Yellow Wood", "Clé 1 : MIROH", "I am YOU", "I am WHO", "I am NOT", "Mixtape",
   ],
+  "p1harmony": [
+    "UNIQUE", "DUH!", "SAD SONG", "Killin' It", "HARMONY : SET IN", "HARMONY : ALL IN", "HARMONY : ZERO IN",
+    "DISHARMONY : FIND OUT", "DISHARMONY : BREAK OUT", "DISHARMONY : STAND OUT",
+    "Love & P1ece : The Best of P1Harmony",
+  ],
 };
 
 /** Pop-up stores por grupo, do mais recente para o mais antigo. */
@@ -23,6 +28,10 @@ export const PRESET_POPUPS: Record<string, string[]> = {
     "ATE",
     "THE VICTORY (Japão)",
     "THE VICTORY",
+  ],
+  "p1harmony": [
+    "hello82 Tour Merch POP-UP",
+    "P1Harmony : EX POP-UP",
   ],
 };
 
@@ -38,6 +47,18 @@ export const PRESET_FANMEETINGS: Record<string, string[]> = {
     "STAYing Home Meeting",
     "1st #LoveSTAY 'SKZ-X'",
   ],
+  "p1harmony": [
+    "P1uspace H : Horror Haven",
+  ],
+};
+
+/** Turnês / concerts por grupo, do mais recente para o mais antigo. */
+export const PRESET_TOURS: Record<string, string[]> = {
+  "p1harmony": [
+    "P1ustage H : MOST WANTED",
+    "P1ustage H : UTOP1A",
+    "P1ustage H : PEACE",
+  ],
 };
 
 export function presetErasFor(groupName: string) {
@@ -50,6 +71,10 @@ export function presetPopupsFor(groupName: string) {
 
 export function presetFanmeetingsFor(groupName: string) {
   return PRESET_FANMEETINGS[slugify(groupName)] ?? [];
+}
+
+export function presetToursFor(groupName: string) {
+  return PRESET_TOURS[slugify(groupName)] ?? [];
 }
 
 export function useCollection(userId: string) {
