@@ -92,7 +92,7 @@ function Dashboard() {
           <div className="flex items-center gap-2">
             <ProfileAvatarButton
               userId={user.id}
-              username={String(user.user_metadata?.username ?? "você")}
+              username={String(user.user_metadata?.["username"] ?? "você")}
             />
             <Button variant="ghost" size="sm" onClick={signOut} title="Sair da conta">
               <LogOut /> Sair
