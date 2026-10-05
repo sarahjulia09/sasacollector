@@ -15,6 +15,7 @@ export const DEFAULT_GROUPS = [
 export const PRESET_ERAS: Record<string, string[]> = {
   "stray-kids": [
     "THIS & THAT",
+    "DO IT",
     "HOLLOW",
     "KARMA",
     "HOP",
@@ -60,9 +61,20 @@ export const PRESET_ERAS: Record<string, string[]> = {
 export const PRESET_VERSIONS: Record<string, Record<string, string[]>> = {
   "stray-kids": {
     "THIS & THAT": ["THIS Ver.", "THAT Ver.", "TRUCK Ver.", "FANS Ver.", "& Ver."],
-    HOLLOW: ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "FC Member Ver."],
-    KARMA: ["Karma Ver.", "Accident Ver."],
-    HOP: ["SKZHOP Ver.", "ACCORDION Ver.", "Platform Album NEMO Ver."],
+    HOLLOW: ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "Fanclub Member Ver."],
+    KARMA: [
+      "Karma (Limited Edition)",
+      "Ceremony Ver.",
+      "Hooray Ver.",
+      "Compact Ver.",
+      "Accordion Ver.",
+      "SKZOO Ver. / Nemo",
+      "Crystal Clear Vinyl",
+      "Graphite Vinyl",
+      "Clear Sapphire Vinyl",
+    ],
+    "DO IT": ["DO Ver. (Limited Edition)", "IT Ver.", "Accordion Ver.", "Platform PLVE Ver."],
+    HOP: ["SKZHOP Ver.", "ACCORDION Ver.", "Platform Album NEMO Ver.", "HIP TAPE"],
     GIANT: ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "Member Ver."],
     ATE: [
       "Ate Ver.",
@@ -73,11 +85,11 @@ export const PRESET_VERSIONS: Record<string, Record<string, string[]>> = {
       "Platform Album NEMO Ver.",
     ],
     "ROCK-STAR": ["ROCK Ver.", "STAR Ver.", "POSTCARD Ver.", "LIMITED STAR Ver.", "HEADLINER Ver."],
-    "SOCIAL PATH": ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "FC Member Ver."],
+    "SOCIAL PATH": ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "Fanclub Member Ver."],
     "5-STAR": ["VER. A", "VER. B", "VER. C", "LIMITED VER.", "DIGIPACK Ver."],
-    "THE SOUND": ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "FC Member Ver."],
+    "THE SOUND": ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "Fanclub Member Ver."],
     MAXIDENT: ["T-CRUSH Ver.", "HEART Ver.", "GO Ver. (Limited)", "CASE Ver."],
-    CIRCUS: ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "FC Member Ver."],
+    CIRCUS: ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "Fanclub Member Ver."],
     ODDINARY: ["SCANNING Ver.", "MASK OFF Ver.", "FRANKENSTEIN Ver. (Limited)", "JEWEL CASE Ver."],
     "Christmas EveL": ["Limited Ver.", "Standard Ver."],
     NOEASY: ["A Type", "B Type", "Limited Ver.", "Jewel Case Ver."],
@@ -143,6 +155,39 @@ export const PRESET_TOURS: Record<string, string[]> = {
   p1harmony: ["P1ustage H : MOST WANTED", "P1ustage H : UTOP1A", "P1ustage H : PEACE"],
 };
 
+/** Seasons Greetings por grupo, da edição mais recente para a mais antiga. */
+export const PRESET_SEASONS_GREETINGS: Record<string, string[]> = {
+  "stray-kids": [
+    "2027 Season's Greetings [Paper Tale]",
+    "2027 Season's Greetings [WAVE MAKER]",
+    "2026 Season's Greetings [Starlight Supper Club]",
+    "2025 Season's Greetings [The Street Kids]",
+    "2024 Season's Greetings [Perfect Day with SKZ]",
+    "2023 Season's Greetings [SKZ'S Mini World]",
+    "2022 Season's Greetings [Room, mates]",
+  ],
+  p1harmony: [
+    "Season's Greetings",
+    "Season's Greetings [P1ece of Harmony]",
+    "Season's Greetings [CODE NAME P1H]",
+    "Season's Greetings [SUPER HERO'S OFF THE RECORDS]",
+  ],
+};
+
+/** Kits de membership por grupo. */
+export const PRESET_MEMBERSHIP_KITS: Record<string, string[]> = {
+  "stray-kids": [
+    "0th Generation (2018–2019)",
+    "1st Generation (2019–2021) - STAY 1st Kit",
+    "2nd Generation (2021–2022) - You make Stray Kids STAY",
+    "3rd Generation (2022–2023) - Home Sweet Home",
+    "4th Generation (2024–2025) - STAY HIDEOUT",
+    "5th Generation (2025–2026) - Stay Over The Rain",
+    "6th Generation (2026–2027) - Stay With Your Wings",
+  ],
+  p1harmony: ["P1ece Membership Kit"],
+};
+
 export function presetErasFor(groupName: string) {
   return PRESET_ERAS[slugify(groupName)] ?? [];
 }
@@ -161,6 +206,14 @@ export function presetFanmeetingsFor(groupName: string) {
 
 export function presetToursFor(groupName: string) {
   return PRESET_TOURS[slugify(groupName)] ?? [];
+}
+
+export function presetSeasonsGreetingsFor(groupName: string) {
+  return PRESET_SEASONS_GREETINGS[slugify(groupName)] ?? [];
+}
+
+export function presetMembershipKitsFor(groupName: string) {
+  return PRESET_MEMBERSHIP_KITS[slugify(groupName)] ?? [];
 }
 
 export async function deleteEraCascade(eraId: string, userId: string) {

@@ -12,6 +12,8 @@ import {
   presetPopupsFor,
   presetFanmeetingsFor,
   presetToursFor,
+  presetSeasonsGreetingsFor,
+  presetMembershipKitsFor,
   slugify,
   type Group,
   type Era,
@@ -24,7 +26,7 @@ const TYPES: ItemType[] = ["Álbum PC", "POB", "Lucky Draw", "Merch"];
 const schema = z.object({
   description: z.string().trim().min(1, "Informe o item ou membro.").max(120),
   groupName: z.string().trim().min(1, "Selecione um grupo.").max(80),
-  eraName: z.string().trim().min(1, "Selecione uma era.").max(80),
+  eraName: z.string().trim().min(1, "Selecione um álbum, evento ou kit.").max(80),
   itemType: z.enum(["Álbum PC", "POB", "Lucky Draw", "Merch"]),
   detail: z.string().trim().max(120),
   origin: z.string().trim().max(120),
@@ -63,7 +65,7 @@ export function CollectionForm({
   const [dueDate, setDueDate] = useState(item?.due_date ?? "");
   const [error, setError] = useState("");
 
-  const existingEras = eras ?? [];
+  const existingEras = (eras ?? []).filter((era) => era.group_id === groupId);
   const defaultGroups = DEFAULT_GROUPS.filter(
     (group) => !groups.some((existingGroup) => existingGroup.slug === group.slug),
   );
@@ -82,9 +84,18 @@ export function CollectionForm({
   const fanmeetings = presetFanmeetingsFor(groupName);
   const tours = presetToursFor(groupName);
   const popups = presetPopupsFor(groupName);
+  const seasonsGreetings = presetSeasonsGreetingsFor(groupName);
+  const membershipKits = presetMembershipKitsFor(groupName);
 
   const allPresetNames = new Set(
-    [...discography, ...fanmeetings, ...tours, ...popups].map((n) => n.toLowerCase()),
+    [
+      ...discography,
+      ...fanmeetings,
+      ...tours,
+      ...popups,
+      ...seasonsGreetings,
+      ...membershipKits,
+    ].map((n) => n.toLowerCase()),
   );
 
   const customEras = existingEras.filter((e) => !allPresetNames.has(e.name.toLowerCase()));
@@ -163,8 +174,8 @@ export function CollectionForm({
         if (eraError || !data)
           throw new Error(
             eraError?.code === "23505"
-              ? "Essa era já existe no grupo."
-              : "Não foi possível criar a era.",
+              ? "Essa categoria já existe no grupo."
+              : "Não foi possível criar a categoria.",
           );
         savedEraId = data.id;
       }
@@ -277,7 +288,7 @@ export function CollectionForm({
             </label>
           )}
           <label className={label}>
-            Era / Álbum
+            Álbum / Evento / Kits
             <select
               required
               value={eraValue}
@@ -322,8 +333,26 @@ export function CollectionForm({
                   ))}
                 </optgroup>
               )}
+              {seasonsGreetings.length > 0 && (
+                <optgroup label="Seasons Greetings">
+                  {seasonsGreetings.map((name) => (
+                    <option key={name} value={getEraOptionValue(name)}>
+                      {name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              {membershipKits.length > 0 && (
+                <optgroup label="Membership Kits">
+                  {membershipKits.map((name) => (
+                    <option key={name} value={getEraOptionValue(name)}>
+                      {name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
               {customEras.length > 0 && (
-                <optgroup label="Outras eras">
+                <optgroup label="Outros álbuns / eventos / kits">
                   {customEras.map((era) => (
                     <option key={era.id} value={era.id}>
                       {era.name}
@@ -331,12 +360,12 @@ export function CollectionForm({
                   ))}
                 </optgroup>
               )}
-              <option value="new">+ Outra era</option>
+              <option value="new">+ Outro álbum / evento / kit</option>
             </select>
           </label>
           {eraValue === "new" && (
             <label className={label}>
-              Nova era
+              Novo álbum / evento / kit
               <input
                 required
                 maxLength={80}

@@ -14,12 +14,12 @@ export const Route = createFileRoute("/_authenticated/grupo/$slug")({
       { title: "Binder do grupo — sasa collector" },
       {
         name: "description",
-        content: "Photocards e merchs organizados por era, com valores e prazos.",
+        content: "Photocards e merchs organizados por álbum, evento ou kit, com valores e prazos.",
       },
       { property: "og:title", content: "Binder do grupo — sasa collector" },
       {
         property: "og:description",
-        content: "Photocards e merchs organizados por era, com valores e prazos.",
+        content: "Photocards e merchs organizados por álbum, evento ou kit, com valores e prazos.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -55,7 +55,8 @@ function GroupPage() {
     items: groupItems.filter((i) => i.era_id === era.id),
   }));
   const withoutEra = groupItems.filter((i) => !i.era_id);
-  if (withoutEra.length) sections.push({ id: "other", name: "Sem era", items: withoutEra });
+  if (withoutEra.length)
+    sections.push({ id: "other", name: "Sem álbum / evento / kit", items: withoutEra });
   return (
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-4xl px-4 pb-20 pt-8 sm:px-8 sm:pt-12">
@@ -90,7 +91,7 @@ function GroupPage() {
                   <p className="mt-3 text-sm text-muted-foreground">
                     {groupItems.length}{" "}
                     {groupItems.length === 1 ? "item cadastrado" : "itens cadastrados"} ·{" "}
-                    {eras.length} {eras.length === 1 ? "era" : "eras"}
+                    {eras.length} {eras.length === 1 ? "categoria" : "categorias"}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -103,7 +104,7 @@ function GroupPage() {
                     onClick={() => {
                       if (
                         window.confirm(
-                          `Excluir o grupo ${group.name}? Todos os itens e eras deste grupo serão removidos.`,
+                          `Excluir o grupo ${group.name}? Todos os itens e categorias deste grupo serão removidos.`,
                         )
                       )
                         deleteGroup.mutate(group.id);
@@ -134,7 +135,7 @@ function GroupPage() {
                   <div className="flex flex-wrap items-end justify-between gap-2 border-b border-primary/25 pb-3">
                     <div>
                       <p className="mb-1 text-xs font-semibold uppercase text-primary">
-                        Era / Álbum
+                        Álbum / Evento / Kits
                       </p>
                       <h2 className="font-display text-3xl font-semibold">{section.name}</h2>
                     </div>
@@ -150,13 +151,13 @@ function GroupPage() {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          title="Excluir era"
-                          aria-label={`Excluir era ${section.name}`}
+                          title="Excluir categoria"
+                          aria-label={`Excluir categoria ${section.name}`}
                           disabled={deleteEra.isPending}
                           onClick={() => {
                             if (
                               window.confirm(
-                                `Excluir a era ${section.name}? Todos os itens dessa era serão removidos.`,
+                                `Excluir a categoria ${section.name}? Todos os itens dessa categoria serão removidos.`,
                               )
                             )
                               deleteEra.mutate(section.id);
@@ -173,7 +174,7 @@ function GroupPage() {
                     ))
                   ) : (
                     <p className="py-8 text-sm text-muted-foreground">
-                      Nenhum item nesta era ainda.
+                      Nenhum item nesta categoria ainda.
                     </p>
                   )}
                 </section>
