@@ -155,7 +155,7 @@ function Dashboard() {
                     key={g.id}
                     className="group flex min-h-44 flex-col justify-between overflow-hidden rounded-md border border-border bg-card transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    {g.cover_url && <CoverImage path={g.cover_url} className="h-28 w-full" />}
+                    {g.cover_url && <CoverImage path={g.cover_url} className="h-44 w-full" />}
                     <div className="flex items-start justify-between p-5">
                       <Link
                         to="/grupo/$slug"

@@ -84,7 +84,7 @@ function GroupPage() {
         ) : (
           <>
             <div className="relative mt-6 overflow-hidden rounded-md">
-              <CoverImage path={group.cover_url} className="h-40 w-full sm:h-56" />
+              <CoverImage path={group.cover_url} className="h-56 w-full sm:h-72" />
               <div className="absolute bottom-3 right-3">
                 <CoverUploadButton userId={user.id} groupId={group.id} />
               </div>
