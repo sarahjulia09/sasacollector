@@ -8,6 +8,8 @@ import { CollectionItem } from "@/components/collection-item";
 import { useCollection } from "@/lib/collection";
 import { dueLabel, formatBRL } from "@/lib/parse-expense";
 import { supabase } from "@/integrations/supabase/client";
+import { ProfileAvatarButton } from "@/components/profile-avatar";
+import { CoverImage } from "@/components/group-cover";
 
 export const Route = createFileRoute("/_authenticated/app")({
   head: () => ({
@@ -87,9 +89,15 @@ function Dashboard() {
               all you need is love, dream$ and $kz
             </p>
           </div>
-          <Button variant="ghost" size="sm" onClick={signOut} title="Sair da conta">
-            <LogOut /> Sair
-          </Button>
+          <div className="flex items-center gap-2">
+            <ProfileAvatarButton
+              userId={user.id}
+              username={String(user.user_metadata?.["username"] ?? "você")}
+            />
+            <Button variant="ghost" size="sm" onClick={signOut} title="Sair da conta">
+              <LogOut /> Sair
+            </Button>
+          </div>
         </header>
 
         <section className="pt-8" aria-label="Resumo financeiro">
@@ -145,9 +153,10 @@ function Dashboard() {
                 return (
                   <div
                     key={g.id}
-                    className="group flex min-h-44 flex-col justify-between rounded-md border border-border bg-card p-5 transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="group flex min-h-44 flex-col justify-between overflow-hidden rounded-md border border-border bg-card transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    <div className="flex items-start justify-between">
+                    {g.cover_url && <CoverImage path={g.cover_url} className="h-28 w-full" />}
+                    <div className="flex items-start justify-between p-5">
                       <Link
                         to="/grupo/$slug"
                         params={{ slug: g.slug }}
