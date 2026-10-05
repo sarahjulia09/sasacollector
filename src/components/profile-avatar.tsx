@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { ImageCropper } from "@/components/image-cropper";
 import { SKZOO, uploadMedia, useMediaUrl, useProfile } from "@/lib/media";
 
 export function AvatarImage({ value, size = 40 }: { value: string | null | undefined; size?: number }) {
@@ -29,6 +30,7 @@ export function ProfileAvatarButton({ userId, username }: { userId: string; user
   const profile = useProfile(userId);
   const client = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [pending, setPending] = useState<File | null>(null);
   const save = useMutation({
     mutationFn: async (value: string) => {
       const { error } = await supabase.from("profiles").update({ avatar_url: value }).eq("id", userId);
@@ -89,7 +91,8 @@ export function ProfileAvatarButton({ userId, username }: { userId: string; user
                 className="hidden"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
-                  if (f) upload.mutate(f);
+                  if (f) setPending(f);
+                  e.target.value = "";
                 }}
               />
             </label>
@@ -98,6 +101,9 @@ export function ProfileAvatarButton({ userId, username }: { userId: string; user
             )}
           </div>
         </div>
+      )}
+      {pending && (
+        <ImageCropper file={pending} aspect={1} round onCancel={() => setPending(null)} onDone={(f) => { setPending(null); upload.mutate(f); }} />
       )}
     </>
   );
