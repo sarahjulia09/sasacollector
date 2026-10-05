@@ -22,14 +22,14 @@ import {
   type Item,
 } from "@/lib/collection";
 
-type ItemType = "Álbum PC" | "POB" | "Lucky Draw" | "Merch";
-const TYPES: ItemType[] = ["Álbum PC", "POB", "Lucky Draw", "Merch"];
+type ItemType = "Regular" | "POB" | "Lucky Draw" | "Merch";
+const TYPES: ItemType[] = ["Regular", "POB", "Lucky Draw", "Merch"];
 
 const schema = z.object({
   description: z.string().trim().min(1, "Informe o item ou membro.").max(120),
   groupName: z.string().trim().min(1, "Selecione um grupo.").max(80),
   eraName: z.string().trim().min(1, "Selecione um álbum, evento ou kit.").max(80),
-  itemType: z.enum(["Álbum PC", "POB", "Lucky Draw", "Merch"]),
+  itemType: z.enum(["Regular", "POB", "Lucky Draw", "Merch"]),
   detail: z.string().trim().max(120),
   origin: z.string().trim().max(120),
   amount: z.number().nonnegative("Informe um valor válido."),
@@ -59,7 +59,7 @@ export function CollectionForm({
   const [eraValue, setEraValue] = useState(item?.era_id ?? "");
   const [newEra, setNewEra] = useState("");
   const [itemType, setItemType] = useState<ItemType>(
-    TYPES.includes(item?.item_type as ItemType) ? (item!.item_type as ItemType) : "Álbum PC",
+    TYPES.includes(item?.item_type as ItemType) ? (item!.item_type as ItemType) : "Regular",
   );
   const [detail, setDetail] = useState(item?.item_detail ?? "");
   const [origin, setOrigin] = useState(item?.origin ?? "");
@@ -401,8 +401,8 @@ export function CollectionForm({
           </label>
           {itemType !== "Merch" && (
             <label className={label}>
-              {itemType === "Álbum PC" ? "Versão do álbum" : "Descrição"}
-              {itemType === "Álbum PC" ? (
+              {itemType === "Regular" ? "Versão do álbum" : "Descrição"}
+              {itemType === "Regular" ? (
                 <select
                   className={input}
                   value={detail}

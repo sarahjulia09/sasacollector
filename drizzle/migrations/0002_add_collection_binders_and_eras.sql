@@ -36,7 +36,7 @@ CREATE POLICY collection_eras_delete_own ON public.collection_eras FOR DELETE TO
 ALTER TABLE public.expenses ADD COLUMN group_id uuid, ADD COLUMN era_id uuid, ADD COLUMN item_type text, ADD COLUMN item_detail text, ADD COLUMN origin text;
 ALTER TABLE public.expenses ADD CONSTRAINT expenses_group_owner_fk FOREIGN KEY (group_id, user_id) REFERENCES public.collection_groups(id, user_id);
 ALTER TABLE public.expenses ADD CONSTRAINT expenses_era_owner_group_fk FOREIGN KEY (era_id, user_id, group_id) REFERENCES public.collection_eras(id, user_id, group_id);
-ALTER TABLE public.expenses ADD CONSTRAINT expenses_item_type_check CHECK (item_type IS NULL OR item_type IN ('Álbum PC', 'POB', 'Lucky Draw', 'Merch'));
+ALTER TABLE public.expenses ADD CONSTRAINT expenses_item_type_check CHECK (item_type IS NULL OR item_type IN ('Regular', 'POB', 'Lucky Draw', 'Merch'));
 ALTER TABLE public.expenses ADD CONSTRAINT expenses_item_detail_length CHECK (item_detail IS NULL OR char_length(item_detail) <= 120);
 ALTER TABLE public.expenses ADD CONSTRAINT expenses_origin_length CHECK (origin IS NULL OR char_length(origin) <= 120);
 CREATE INDEX expenses_group_id_idx ON public.expenses (group_id);
