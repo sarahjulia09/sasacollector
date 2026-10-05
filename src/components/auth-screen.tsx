@@ -47,6 +47,11 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
           }
           throw new Error(err.message);
         }
+        if (data.user && !data.session) {
+          throw new Error(
+            "A conta foi criada, mas o Supabase não iniciou uma sessão. Como este app usa e-mails fictícios, desative a confirmação de e-mail no Supabase Auth e remova a conta pendente antes de tentar novamente.",
+          );
+        }
         if (data.user) {
           const { error: profileErr } = await supabase
             .from("profiles")
@@ -54,6 +59,10 @@ export function AuthScreen({ initialMode = "signin" }: { initialMode?: Mode }) {
           if (profileErr?.code === "23505") {
             await supabase.auth.signOut();
             throw new Error("Esse nome de usuário já está em uso. Escolha outro ou entre.");
+          }
+          if (profileErr) {
+            await supabase.auth.signOut();
+            throw new Error("Não foi possível criar seu perfil. Tente novamente.");
           }
         }
         return;
