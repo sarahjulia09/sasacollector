@@ -299,7 +299,7 @@ export function CollectionForm({
             </label>
           )}
           <label className={label}>
-            Álbum / Evento / Kits
+            Álbum / Evento / Kit
             <select
               required
               value={eraValue}
