@@ -30,7 +30,7 @@ export const PRESET_ERAS: Record<string, string[]> = {
     "ODDINARY",
     "Christmas EveL",
     "NOEASY",
-    "SKZ2021",
+    "SKZ2020",
     "ALL IN",
     "IN LIFE",
     "GO LIVE",
@@ -65,7 +65,8 @@ export const PRESET_VERSIONS: Record<string, Record<string, string[]>> = {
       "THAT Ver.",
       "TRUCK Ver.",
       "FANS Ver.",
-      "& Ver."],
+      "& Ver."
+    ],
     HOLLOW: ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "Fanclub Member Ver."],
     KARMA: [
       "Karma (Limited Edition)",
@@ -98,7 +99,7 @@ export const PRESET_VERSIONS: Record<string, Record<string, string[]>> = {
     ODDINARY: ["SCANNING Ver.", "MASK OFF Ver.", "FRANKENSTEIN Ver. (Limited)", "JEWEL CASE Ver."],
     "Christmas EveL": ["Limited Ver.", "Standard Ver."],
     NOEASY: ["A Type", "B Type", "Limited Ver.", "Jewel Case Ver."],
-    SKZ2021: ["first press limited", "Regular Ver.", "period time limited","complete limited edition "],
+    SKZ2020: ["first press limited", "Regular Ver.", "period time limited","complete limited edition "],
     "ALL IN": ["Limited Ver. A", "Limited Ver. B", "Limited Ver. C", "Regular Ver."],
     "IN LIFE": ["A Type", "B Type"],
     "GO LIVE": ["A Type", "B Type", "C Type", "Limited Ver."],
