@@ -158,9 +158,6 @@ function GroupPage() {
                 <section key={section.id} className="pt-10">
                   <div className="flex flex-wrap items-end justify-between gap-2 border-b border-primary/25 pb-3">
                     <div>
-                      <p className="mb-1 text-xs font-semibold uppercase text-primary">
-                        Álbum / Evento / Kits
-                      </p>
                       <h2 className="font-display text-3xl font-semibold">{section.name}</h2>
                     </div>
                     <div className="flex items-center gap-2">
