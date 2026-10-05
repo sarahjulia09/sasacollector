@@ -48,6 +48,7 @@ export type Database = {
       }
       collection_groups: {
         Row: {
+          cover_url: string | null
           created_at: string
           id: string
           name: string
@@ -55,6 +56,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          cover_url?: string | null
           created_at?: string
           id?: string
           name: string
@@ -62,6 +64,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          cover_url?: string | null
           created_at?: string
           id?: string
           name?: string
@@ -130,18 +133,62 @@ export type Database = {
           },
         ]
       }
+      group_wishlists: {
+        Row: {
+          created_at: string
+          done: boolean
+          group_id: string
+          id: string
+          image_path: string
+          notes: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          done?: boolean
+          group_id: string
+          id?: string
+          image_path: string
+          notes?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          done?: boolean
+          group_id?: string
+          id?: string
+          image_path?: string
+          notes?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_wishlists_group_id_user_id_fkey"
+            columns: ["group_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "collection_groups"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string
           id: string
           username: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
           id: string
           username: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
           id?: string
           username?: string
