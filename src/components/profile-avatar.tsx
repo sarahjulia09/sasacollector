@@ -6,7 +6,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { ImageCropper } from "@/components/image-cropper";
 import { SKZOO, uploadMedia, useMediaUrl, useProfile } from "@/lib/media";
 
-export function AvatarImage({ value, size = 40 }: { value: string | null | undefined; size?: number }) {
+export function AvatarImage({
+  value,
+  size = 40,
+}: {
+  value: string | null | undefined;
+  size?: number;
+}) {
   const isUpload = !!value && !value.startsWith("skzoo:");
   const url = useMediaUrl(isUpload ? value : null);
   const mascot = value?.startsWith("skzoo:") ? SKZOO.find((m) => `skzoo:${m.id}` === value) : null;
@@ -33,7 +39,10 @@ export function ProfileAvatarButton({ userId, username }: { userId: string; user
   const [pending, setPending] = useState<File | null>(null);
   const save = useMutation({
     mutationFn: async (value: string) => {
-      const { error } = await supabase.from("profiles").update({ avatar_url: value }).eq("id", userId);
+      const { error } = await supabase
+        .from("profiles")
+        .update({ avatar_url: value })
+        .eq("id", userId);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -58,11 +67,22 @@ export function ProfileAvatarButton({ userId, username }: { userId: string; user
         <span>@{username}</span>
       </button>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4" onClick={() => setOpen(false)}>
-          <div className="w-full max-w-md rounded-md bg-card p-5 shadow-lg" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-md bg-card p-5 shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-display text-2xl font-semibold">Seu ícone</h2>
-              <Button variant="ghost" size="icon" onClick={() => setOpen(false)} aria-label="Fechar">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setOpen(false)}
+                aria-label="Fechar"
+              >
                 <X />
               </Button>
             </div>
@@ -76,7 +96,9 @@ export function ProfileAvatarButton({ userId, username }: { userId: string; user
                   onClick={() => save.mutate(`skzoo:${m.id}`)}
                   className={`flex flex-col items-center gap-1 rounded-md border p-2 text-xs hover:border-primary ${current === `skzoo:${m.id}` ? "border-primary bg-secondary" : "border-border"}`}
                 >
-                  <span className="text-3xl" aria-hidden>{m.emoji}</span>
+                  <span className="text-3xl" aria-hidden>
+                    {m.emoji}
+                  </span>
                   <span className="font-medium">{m.name}</span>
                 </button>
               ))}
@@ -97,13 +119,24 @@ export function ProfileAvatarButton({ userId, username }: { userId: string; user
               />
             </label>
             {(save.isError || upload.isError) && (
-              <p className="mt-3 text-sm text-destructive">Não foi possível salvar. Tente novamente.</p>
+              <p className="mt-3 text-sm text-destructive">
+                Não foi possível salvar. Tente novamente.
+              </p>
             )}
           </div>
         </div>
       )}
       {pending && (
-        <ImageCropper file={pending} aspect={1} round onCancel={() => setPending(null)} onDone={(f) => { setPending(null); upload.mutate(f); }} />
+        <ImageCropper
+          file={pending}
+          aspect={1}
+          round
+          onCancel={() => setPending(null)}
+          onDone={(f) => {
+            setPending(null);
+            upload.mutate(f);
+          }}
+        />
       )}
     </>
   );

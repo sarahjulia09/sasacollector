@@ -79,23 +79,53 @@ export function ImageCropper({
         </div>
         <label className="mt-4 block text-xs font-semibold text-muted-foreground">
           Zoom
-          <input type="range" min={1} max={4} step={0.05} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} className="w-full accent-primary" />
+          <input
+            type="range"
+            min={1}
+            max={4}
+            step={0.05}
+            value={zoom}
+            onChange={(e) => setZoom(Number(e.target.value))}
+            className="w-full accent-primary"
+          />
         </label>
         <label className="mt-2 block text-xs font-semibold text-muted-foreground">
           Girar ({Math.round(rotation)}°)
-          <input type="range" min={-180} max={180} step={1} value={rotation} onChange={(e) => setRotation(Number(e.target.value))} className="w-full accent-primary" />
+          <input
+            type="range"
+            min={-180}
+            max={180}
+            step={1}
+            value={rotation}
+            onChange={(e) => setRotation(Number(e.target.value))}
+            className="w-full accent-primary"
+          />
         </label>
         <div className="mt-3 flex flex-wrap justify-between gap-2">
           <div className="flex gap-2">
-            <Button type="button" variant="outline" size="icon" title="Girar para a esquerda" onClick={() => setRotation((r) => ((r - 90 + 540) % 360) - 180)}>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              title="Girar para a esquerda"
+              onClick={() => setRotation((r) => ((r - 90 + 540) % 360) - 180)}
+            >
               <RotateCcw />
             </Button>
-            <Button type="button" variant="outline" size="icon" title="Girar para a direita" onClick={() => setRotation((r) => ((r + 90 + 540) % 360) - 180)}>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              title="Girar para a direita"
+              onClick={() => setRotation((r) => ((r + 90 + 540) % 360) - 180)}
+            >
               <RotateCw />
             </Button>
           </div>
           <div className="flex gap-2">
-            <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancelar
+            </Button>
             <Button
               type="button"
               disabled={!area || busy}

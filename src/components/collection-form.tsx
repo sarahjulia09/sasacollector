@@ -71,7 +71,7 @@ export function CollectionForm({
   const [removeImage, setRemoveImage] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const savedUrl = useMediaUrl(!removeImage ? item?.image_path : null);
-  const shownImage = preview ?? (removeImage ? null : savedUrl.data ?? null);
+  const shownImage = preview ?? (removeImage ? null : (savedUrl.data ?? null));
 
   const existingEras = (eras ?? []).filter((era) => era.group_id === groupId);
   const defaultGroups = DEFAULT_GROUPS.filter(
@@ -463,15 +463,37 @@ export function CollectionForm({
             Scan / foto do item (opcional)
             <div className="mt-1 flex items-center gap-3">
               {shownImage && (
-                <img src={shownImage} alt="" className="h-28 w-20 rounded-md border border-border object-cover" />
+                <img
+                  src={shownImage}
+                  alt=""
+                  className="h-28 w-20 rounded-md border border-border object-cover"
+                />
               )}
               <div className="flex flex-col gap-2">
                 <label className="inline-flex cursor-pointer items-center justify-center rounded-md border border-dashed border-primary/50 px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary">
                   {shownImage ? "Trocar imagem" : "Adicionar scan"}
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) setPendingImage(f); e.target.value = ""; }} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) setPendingImage(f);
+                      e.target.value = "";
+                    }}
+                  />
                 </label>
                 {shownImage && (
-                  <Button type="button" variant="ghost" size="sm" onClick={() => { setImageFile(null); setPreview(null); setRemoveImage(true); }}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setImageFile(null);
+                      setPreview(null);
+                      setRemoveImage(true);
+                    }}
+                  >
                     Remover
                   </Button>
                 )}

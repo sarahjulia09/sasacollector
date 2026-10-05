@@ -54,14 +54,30 @@ export function CollectionItem({ item, userId }: { item: Item; userId: string })
   return (
     <article className="border-b border-border py-4 last:border-b-0">
       {zoomed && scan.data && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/70 p-4" onClick={() => setZoomed(false)}>
-          <img src={scan.data} alt={item.description} className="max-h-[90vh] max-w-full rounded-md" />
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/70 p-4"
+          onClick={() => setZoomed(false)}
+        >
+          <img
+            src={scan.data}
+            alt={item.description}
+            className="max-h-[90vh] max-w-full rounded-md"
+          />
         </div>
       )}
       <div className="flex items-start gap-3">
         {scan.data && (
-          <button type="button" onClick={() => setZoomed(true)} title="Ver scan" className="shrink-0">
-            <img src={scan.data} alt="" className="h-16 w-11 rounded-md border border-border object-cover" />
+          <button
+            type="button"
+            onClick={() => setZoomed(true)}
+            title="Ver scan"
+            className="shrink-0"
+          >
+            <img
+              src={scan.data}
+              alt=""
+              className="h-16 w-11 rounded-md border border-border object-cover"
+            />
           </button>
         )}
         <div className="flex size-12 shrink-0 flex-col items-center justify-center rounded-md bg-secondary text-secondary-foreground">
