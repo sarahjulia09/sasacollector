@@ -120,6 +120,9 @@ export function CollectionForm({
         ? eraValue.slice(7)
         : (existingEras.find((e) => e.id === eraValue)?.name ?? "");
 
+  const isDiscographyEra = discography.some(
+    (name) => name.trim().toLowerCase() === eraName.trim().toLowerCase(),
+  );
   const versionsPresets = presetVersionsFor(groupName, eraName);
   const popupPresets = presetPopupsFor(groupName);
   const fanmeetingPresets = presetFanmeetingsFor(groupName);
@@ -127,6 +130,8 @@ export function CollectionForm({
 
   const mutation = useMutation({
     mutationFn: async () => {
+      const parsedAmount = parseAmount(amount);
+      if (parsedAmount === null) throw new Error("Informe um valor válido.");
       const values = schema.parse({
         description,
         groupName,
@@ -134,7 +139,7 @@ export function CollectionForm({
         itemType,
         detail,
         origin,
-        amount: parseAmount(amount),
+        amount: parsedAmount,
         dueDate,
       });
       let savedGroupId = groupId;
@@ -203,7 +208,10 @@ export function CollectionForm({
       const { error: itemError } = editing
         ? await supabase.from("expenses").update(payload).eq("id", item!.id)
         : await supabase.from("expenses").insert({ ...payload, user_id: userId });
-      if (itemError) throw new Error("Não foi possível salvar o item. Tente novamente.");
+      if (itemError) {
+        const errorCode = itemError.code ? ` (${itemError.code})` : "";
+        throw new Error(`Não foi possível salvar o item${errorCode}: ${itemError.message}`);
+      }
     },
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ["collection", userId] });
@@ -265,6 +273,7 @@ export function CollectionForm({
               onChange={(e) => {
                 setGroupId(e.target.value);
                 setEraValue("");
+                setDetail("");
               }}
               className={input}
             >
@@ -292,6 +301,7 @@ export function CollectionForm({
                 onChange={(e) => {
                   setNewGroup(e.target.value);
                   setEraValue("");
+                  setDetail("");
                 }}
                 placeholder="Ex.: Stray Kids"
                 className={input}
@@ -303,7 +313,10 @@ export function CollectionForm({
             <select
               required
               value={eraValue}
-              onChange={(e) => setEraValue(e.target.value)}
+              onChange={(e) => {
+                setEraValue(e.target.value);
+                setDetail("");
+              }}
               className={input}
               disabled={!groupId}
             >
@@ -391,7 +404,10 @@ export function CollectionForm({
             Tipo de item
             <select
               value={itemType}
-              onChange={(e) => setItemType(e.target.value as ItemType)}
+              onChange={(e) => {
+                setItemType(e.target.value as ItemType);
+                setDetail("");
+              }}
               className={input}
             >
               {TYPES.map((t) => (
@@ -399,35 +415,30 @@ export function CollectionForm({
               ))}
             </select>
           </label>
-          {itemType !== "Merch" && (
-            <label className={label}>
-              {itemType === "Regular" ? "Versão do álbum" : "Descrição"}
-              {itemType === "Regular" ? (
-                <select
-                  className={input}
-                  value={detail}
-                  onChange={(e) => setDetail(e.target.value)}
-                >
-                  <option value="">Selecione a versão</option>
-                  {versionsPresets?.map((version) => (
-                    <option key={version} value={version}>
-                      {version}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  className={input}
-                  value={detail}
-                  onChange={(e) => setDetail(e.target.value)}
-                />
-              )}
-            </label>
-          )}
+          <label className={label}>
+            {isDiscographyEra ? "Versão do álbum" : "Descrição"}
+            {isDiscographyEra ? (
+              <select className={input} value={detail} onChange={(e) => setDetail(e.target.value)}>
+                <option value="">Selecione a versão</option>
+                {versionsPresets?.map((version) => (
+                  <option key={version} value={version}>
+                    {version}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                maxLength={120}
+                className={input}
+                value={detail}
+                onChange={(e) => setDetail(e.target.value)}
+              />
+            )}
+          </label>
 
           <label className={label}>
-            Origem / Comunidade / CEG
+            Comunidade / CEG
             <input
               maxLength={120}
               value={origin}
