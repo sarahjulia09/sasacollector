@@ -199,7 +199,13 @@ export function presetErasFor(groupName: string) {
 }
 
 export function presetVersionsFor(groupName: string, eraName: string) {
-  return PRESET_VERSIONS[slugify(groupName)]?.[eraName] ?? [];
+  const versions = PRESET_VERSIONS[slugify(groupName)];
+  if (!versions) return [];
+
+  const presetEra = Object.keys(versions).find(
+    (name) => name.trim().toLowerCase() === eraName.trim().toLowerCase(),
+  );
+  return presetEra ? versions[presetEra] : [];
 }
 
 export function presetPopupsFor(groupName: string) {
