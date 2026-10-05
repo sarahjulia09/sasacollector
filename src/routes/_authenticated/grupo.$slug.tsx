@@ -7,6 +7,8 @@ import { CollectionForm } from "@/components/collection-form";
 import { CollectionItem } from "@/components/collection-item";
 import { deleteEraCascade, deleteGroupCascade, useCollection } from "@/lib/collection";
 import { formatBRL } from "@/lib/parse-expense";
+import { CoverImage, CoverUploadButton } from "@/components/group-cover";
+import { WishlistTab } from "@/components/wishlist-tab";
 
 export const Route = createFileRoute("/_authenticated/grupo/$slug")({
   head: () => ({
@@ -34,6 +36,7 @@ function GroupPage() {
   const navigate = useNavigate();
   const query = useCollection(user.id);
   const [adding, setAdding] = useState(false);
+  const [tab, setTab] = useState<"colecao" | "wishlist">("colecao");
   const data = query.data;
   const group = data?.groups.find((g) => g.slug === slug);
   const deleteEra = useMutation({
@@ -81,7 +84,13 @@ function GroupPage() {
           </div>
         ) : (
           <>
-            <header className="mt-8 border-b border-border pb-7">
+            <div className="relative mt-6 overflow-hidden rounded-md">
+              <CoverImage path={group.cover_url} className="h-56 w-full sm:h-72" />
+              <div className="absolute bottom-3 right-3">
+                <CoverUploadButton userId={user.id} groupId={group.id} />
+              </div>
+            </div>
+            <header className="mt-6 border-b border-border pb-7">
               <p className="mb-2 text-xs font-semibold uppercase text-primary">Binder / Grupo</p>
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
@@ -129,7 +138,22 @@ function GroupPage() {
                 </p>
               </div>
             </div>
-            {sections.length ? (
+            <div className="mt-6 flex gap-1 border-b border-border" role="tablist">
+              {(["colecao", "wishlist"] as const).map((t) => (
+                <button
+                  key={t}
+                  role="tab"
+                  aria-selected={tab === t}
+                  onClick={() => setTab(t)}
+                  className={`-mb-px border-b-2 px-4 py-2 text-sm font-semibold ${tab === t ? "border-primary text-primary" : "border-transparent text-muted-foreground"}`}
+                >
+                  {t === "colecao" ? "Coleção & Gastos" : "Wishlist"}
+                </button>
+              ))}
+            </div>
+            {tab === "wishlist" ? (
+              <WishlistTab userId={user.id} groupId={group.id} />
+            ) : sections.length ? (
               sections.map((section) => (
                 <section key={section.id} className="pt-10">
                   <div className="flex flex-wrap items-end justify-between gap-2 border-b border-primary/25 pb-3">

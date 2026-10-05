@@ -1,0 +1,1 @@
+ALTER TABLE public.expenses ADD COLUMN image_path text;

@@ -22,6 +22,20 @@
       "when": 1790957446199,
       "tag": "0002_add_collection_binders_and_eras",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791169541686,
+      "tag": "0003_profile_avatar_group_cover_wishlist",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791170221970,
+      "tag": "0004_expense_image_path",
+      "breakpoints": true
     }
   ]
 }
