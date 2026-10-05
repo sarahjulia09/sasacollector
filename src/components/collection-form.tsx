@@ -4,6 +4,8 @@ import { z } from "zod";
 import { Plus, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { ImageCropper } from "@/components/image-cropper";
+import { uploadMedia, useMediaUrl } from "@/lib/media";
 import { parseAmount } from "@/lib/parse-expense";
 import {
   DEFAULT_GROUPS,
@@ -62,6 +64,12 @@ export function CollectionForm({
   const [amount, setAmount] = useState(item ? String(item.amount).replace(".", ",") : "");
   const [dueDate, setDueDate] = useState(item?.due_date ?? "");
   const [error, setError] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [pendingImage, setPendingImage] = useState<File | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const savedUrl = useMediaUrl(!removeImage ? item?.image_path : null);
+  const shownImage = preview ?? (removeImage ? null : savedUrl.data ?? null);
 
   const existingEras = eras ?? [];
   const defaultGroups = DEFAULT_GROUPS.filter(
@@ -168,7 +176,10 @@ export function CollectionForm({
           );
         savedEraId = data.id;
       }
+      let image_path = removeImage ? null : (item?.image_path ?? null);
+      if (imageFile) image_path = await uploadMedia(userId, "items", imageFile);
       const payload = {
+        image_path,
         description: values.description,
         group_id: savedGroupId,
         era_id: savedEraId,
@@ -419,6 +430,25 @@ export function CollectionForm({
               className={input}
             />
           </label>
+          <div className={`${label} sm:col-span-2`}>
+            Scan / foto do item (opcional)
+            <div className="mt-1 flex items-center gap-3">
+              {shownImage && (
+                <img src={shownImage} alt="" className="h-28 w-20 rounded-md border border-border object-cover" />
+              )}
+              <div className="flex flex-col gap-2">
+                <label className="inline-flex cursor-pointer items-center justify-center rounded-md border border-dashed border-primary/50 px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary">
+                  {shownImage ? "Trocar imagem" : "Adicionar scan"}
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) setPendingImage(f); e.target.value = ""; }} />
+                </label>
+                {shownImage && (
+                  <Button type="button" variant="ghost" size="sm" onClick={() => { setImageFile(null); setPreview(null); setRemoveImage(true); }}>
+                    Remover
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
           {error && (
             <p role="alert" className="text-sm text-destructive sm:col-span-2">
               {error}
@@ -434,6 +464,19 @@ export function CollectionForm({
             </Button>
           </div>
         </form>
+        {pendingImage && (
+          <ImageCropper
+            file={pendingImage}
+            aspect={55 / 85}
+            onCancel={() => setPendingImage(null)}
+            onDone={(f) => {
+              setPendingImage(null);
+              setImageFile(f);
+              setRemoveImage(false);
+              setPreview(URL.createObjectURL(f));
+            }}
+          />
+        )}
       </section>
     </div>
   );

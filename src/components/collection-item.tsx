@@ -4,6 +4,7 @@ import { Check, Pencil, RotateCcw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteEraCascade, type Item, useCollection } from "@/lib/collection";
+import { useMediaUrl } from "@/lib/media";
 import { CollectionForm } from "@/components/collection-form";
 import { dueLabel, formatBRL, formatDateParts } from "@/lib/parse-expense";
 
@@ -46,11 +47,23 @@ export function CollectionItem({ item, userId }: { item: Item; userId: string })
     },
     onSuccess: () => client.invalidateQueries({ queryKey: ["collection", userId] }),
   });
+  const scan = useMediaUrl(item.image_path);
+  const [zoomed, setZoomed] = useState(false);
   const due = dueLabel(item.due_date);
   const date = formatDateParts(item.due_date);
   return (
     <article className="border-b border-border py-4 last:border-b-0">
+      {zoomed && scan.data && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/70 p-4" onClick={() => setZoomed(false)}>
+          <img src={scan.data} alt={item.description} className="max-h-[90vh] max-w-full rounded-md" />
+        </div>
+      )}
       <div className="flex items-start gap-3">
+        {scan.data && (
+          <button type="button" onClick={() => setZoomed(true)} title="Ver scan" className="shrink-0">
+            <img src={scan.data} alt="" className="h-16 w-11 rounded-md border border-border object-cover" />
+          </button>
+        )}
         <div className="flex size-12 shrink-0 flex-col items-center justify-center rounded-md bg-secondary text-secondary-foreground">
           <strong className="font-display text-lg leading-none">{date.day}</strong>
           <span className="text-[10px] uppercase">{date.monthShort}</span>
