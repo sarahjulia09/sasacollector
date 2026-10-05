@@ -82,6 +82,7 @@ export type Database = {
           era_id: string | null
           group_id: string | null
           id: string
+          image_path: string | null
           item_detail: string | null
           item_type: string | null
           origin: string | null
@@ -96,6 +97,7 @@ export type Database = {
           era_id?: string | null
           group_id?: string | null
           id?: string
+          image_path?: string | null
           item_detail?: string | null
           item_type?: string | null
           origin?: string | null
@@ -110,6 +112,7 @@ export type Database = {
           era_id?: string | null
           group_id?: string | null
           id?: string
+          image_path?: string | null
           item_detail?: string | null
           item_type?: string | null
           origin?: string | null
