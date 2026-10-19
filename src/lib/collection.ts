@@ -129,6 +129,7 @@ export const PRESET_VERSIONS: Record<string, Record<string, string[]>> = {
 /** Pop-up stores por grupo, do mais recente para o mais antigo. */
 export const PRESET_POPUPS: Record<string, string[]> = {
   "stray-kids": [
+    "Odd & Fresh",
     "SKZOO EVERYWHERE ALL AROUND THE WORLD",
     "Stray Kids World Tour POPUP STORE",
     "Do It Pop-Up Store",
