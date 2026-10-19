@@ -50,7 +50,7 @@ const EVENT_DATES: Record<string, string> = {
   "ODD & FRESH": "2023-07-22",
   "SKZOO EVERYWHERE ALL AROUND THE WORLD": "2026-04-24",
   "STAY in Our Little House": "2026-03-28",
-  "Do It Pop-Up Store": "205-11-22",
+  "Do It Pop-Up Store": "2025-11-22",
   "Stray Kids World Tour POPUP STORE": "2025-10-11",
   "SKZ 5'CLOCK": "2025-02-14",
   "HOP (pop-up)": "2024-12-14",
