@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeft, Plus, Layers3, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Layers3, Trash2, Disc3, Gift, Sparkles, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CollectionForm } from "@/components/collection-form";
 import { CollectionItem } from "@/components/collection-item";
@@ -14,7 +14,7 @@ import { formatBRL } from "@/lib/parse-expense";
 import { CoverImage, CoverUploadButton } from "@/components/group-cover";
 import { WishlistTab } from "@/components/wishlist-tab";
 
-/** Datas de lançamento de álbuns, fanmeetings, pop-ups e eventos */
+/** Datas de lançamento conhecidas de álbuns e eventos oficiais */
 const EVENT_DATES: Record<string, string> = {
   // Stray Kids — Discografia
   "THIS & THAT": "2026-08-07",
@@ -46,7 +46,7 @@ const EVENT_DATES: Record<string, string> = {
   "I am NOT": "2018-03-26",
   "Mixtape": "2018-01-08",
 
-  // Stray Kids — Fanmeetings & Pop-ups
+  // Stray Kids — Fanmeetings, Tours & Pop-ups
   "SKZOO EVERYWHERE ALL AROUND THE WORLD": "2026-04-24",
   "STAY in Our Little House": "2026-03-28",
   "Do It Pop-Up Store": "2025-11-22",
@@ -84,6 +84,113 @@ const EVENT_DATES: Record<string, string> = {
   "DISHARMONY : BREAK OUT": "2021-04-20",
   "DISHARMONY : STAND OUT": "2020-10-28",
 };
+
+type EraCategoryKey = "discografia" | "kits_sg" | "eventos" | "outros";
+
+const CATEGORY_CONFIG: Record<
+  EraCategoryKey,
+  { label: string; icon: typeof Disc3; desc: string }
+> = {
+  discografia: {
+    label: "Discografia",
+    icon: Disc3,
+    desc: "Álbuns, mini álbuns e lançamentos oficiais",
+  },
+  kits_sg: {
+    label: "Season's Greetings & Kits",
+    icon: Gift,
+    desc: "Kits de fã-clube oficial e pacotes de ano novo",
+  },
+  eventos: {
+    label: "Eventos, Turnês & Pop-ups",
+    icon: Sparkles,
+    desc: "Fanmeetings, pop-up stores e turnês",
+  },
+  outros: {
+    label: "Parcerias & Outras Eras",
+    icon: Tag,
+    desc: "Colaborações, itens avulsos e outras categorias",
+  },
+};
+
+/** Descobre a data de uma era (case-insensitive ou extraindo ano do texto) */
+function getEventDate(name: string): string {
+  const norm = name.trim().toLowerCase();
+  for (const [key, date] of Object.entries(EVENT_DATES)) {
+    if (key.trim().toLowerCase() === norm) return date;
+  }
+  // Extrai o maior ano de 4 dígitos encontrado (ex: "3rd Gen 2022-2023" => 2023)
+  const years = name.match(/\b(20\d\d)\b/g);
+  if (years && years.length > 0) {
+    const latestYear = Math.max(...years.map(Number));
+    return `${latestYear}-01-01`;
+  }
+  return "";
+}
+
+/** Classifica a era em um dos 4 blocos */
+function getEraCategory(name: string): EraCategoryKey {
+  const n = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  if (
+    n.includes("season") ||
+    n.includes("greeting") ||
+    n.includes("kit") ||
+    n.includes("membership") ||
+    n.includes("generation") ||
+    n.includes("gen") ||
+    n.includes("fanclub")
+  ) {
+    return "kits_sg";
+  }
+
+  if (
+    n.includes("pop-up") ||
+    n.includes("popup") ||
+    n.includes("fanmeeting") ||
+    n.includes("tour") ||
+    n.includes("magic school") ||
+    n.includes("toy world") ||
+    n.includes("pilot") ||
+    n.includes("chocolate factory") ||
+    n.includes("skz-x") ||
+    n.includes("meeting") ||
+    n.includes("victory") ||
+    n.includes("5'clock") ||
+    n.includes("horror haven") ||
+    n.includes("most wanted") ||
+    n.includes("utop1a") ||
+    n.includes("peace")
+  ) {
+    return "eventos";
+  }
+
+  const norm = name.trim().toLowerCase();
+  for (const [key] of Object.entries(EVENT_DATES)) {
+    if (key.trim().toLowerCase() === norm) {
+      if (
+        key.includes("pop-up") ||
+        key.includes("POPUP") ||
+        key.includes("Meeting") ||
+        key.includes("STAY") ||
+        key.includes("VICTORY") ||
+        key.includes("SCHOOL") ||
+        key.includes("WORLD") ||
+        key.includes("PILOT") ||
+        key.includes("CLOCK") ||
+        key.includes("Haven") ||
+        key.includes("WANTED") ||
+        key.includes("UTOP1A") ||
+        key.includes("PEACE")
+      ) {
+        return "eventos";
+      }
+      return "discografia";
+    }
+  }
+
+  return "outros";
+}
 
 export const Route = createFileRoute("/_authenticated/grupo/$slug")({
   head: () => ({
@@ -127,6 +234,7 @@ function GroupPage() {
   });
   const groupItems = data?.items.filter((i) => i.group_id === group?.id) ?? [];
   const eras = data?.eras.filter((e) => e.group_id === group?.id) ?? [];
+
   const pendingFirst = (a: (typeof groupItems)[number], b: (typeof groupItems)[number]) => {
     if (a.paid !== b.paid) return a.paid ? 1 : -1;
     if (a.due_date && b.due_date) return a.due_date.localeCompare(b.due_date);
@@ -134,6 +242,7 @@ function GroupPage() {
     if (b.due_date) return 1;
     return 0;
   };
+
   const sections = eras.map((era) => ({
     id: era.id,
     name: era.name,
@@ -142,23 +251,44 @@ function GroupPage() {
   const withoutEra = groupItems.filter((i) => !i.era_id);
   if (withoutEra.length)
     sections.push({ id: "other", name: "Sem álbum / evento / kit", items: withoutEra });
+
   sections.forEach((s) => s.items.sort(pendingFirst));
+
   const pendingCount = (s: (typeof sections)[number]) => s.items.filter((i) => !i.paid).length;
-  const chronological = (a: (typeof sections)[number], b: (typeof sections)[number]) => {
-    const da = EVENT_DATES[a.name] ?? "";
-    const db = EVENT_DATES[b.name] ?? "";
-    if (da && db) return db.localeCompare(da); // Mais recente primeiro
-    if (da) return -1;
-    if (db) return 1;
-    return a.name.localeCompare(b.name);
+
+  const sortSections = (list: typeof sections) => {
+    return [...list].sort((a, b) => {
+      const pa = pendingCount(a);
+      const pb = pendingCount(b);
+      if ((pa > 0) !== (pb > 0)) return pa > 0 ? -1 : 1;
+      if (pa > 0 && pb > 0 && pa !== pb) return pb - pa;
+
+      const da = getEventDate(a.name);
+      const db = getEventDate(b.name);
+      if (da && db) return db.localeCompare(da); // Mais recente primeiro
+      if (da) return -1;
+      if (db) return 1;
+      return a.name.localeCompare(b.name);
+    });
   };
-  sections.sort((a, b) => {
-    const pa = pendingCount(a);
-    const pb = pendingCount(b);
-    if ((pa > 0) !== (pb > 0)) return pa > 0 ? -1 : 1;
-    if (pa > 0 && pb > 0 && pa !== pb) return pb - pa;
-    return chronological(a, b);
-  });
+
+  const categoryKeys: EraCategoryKey[] = ["discografia", "kits_sg", "eventos", "outros"];
+  const categorizedSections = categoryKeys
+    .map((catKey) => {
+      const catSections = sections.filter((s) => getEraCategory(s.name) === catKey);
+      return {
+        key: catKey,
+        config: CATEGORY_CONFIG[catKey],
+        sections: sortSections(catSections),
+        totalAmount: catSections.reduce(
+          (sum, s) => sum + s.items.reduce((n, i) => n + i.amount, 0),
+          0
+        ),
+        totalCount: catSections.reduce((sum, s) => sum + s.items.length, 0),
+      };
+    })
+    .filter((c) => c.sections.length > 0);
+
   return (
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-4xl px-4 pb-20 pt-8 sm:px-8 sm:pt-12">
@@ -252,53 +382,79 @@ function GroupPage() {
             </div>
             {tab === "wishlist" ? (
               <WishlistTab userId={user.id} groupId={group.id} />
-            ) : sections.length ? (
-              sections.map((section) => (
-                <section key={section.id} className="pt-10">
-                  <div className="flex flex-wrap items-end justify-between gap-2 border-b border-primary/25 pb-3">
-                    <div>
-                      <h2 className="font-display text-3xl font-semibold">{section.name}</h2>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm text-muted-foreground">
-                        {section.items.length} pcs / itens <span aria-hidden>·</span>{" "}
-                        <strong className="text-foreground">
-                          {formatBRL(section.items.reduce((n, i) => n + i.amount, 0))}
-                        </strong>
+            ) : categorizedSections.length ? (
+              <div className="space-y-14 pt-8">
+                {categorizedSections.map((cat) => (
+                  <div key={cat.key} className="space-y-8">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-primary/30 pb-2.5">
+                      <div className="flex items-center gap-2.5">
+                        <cat.config.icon className="size-5 text-primary" />
+                        <div>
+                          <h2 className="font-display text-2xl font-bold text-foreground">
+                            {cat.config.label}
+                          </h2>
+                          <p className="text-xs text-muted-foreground">{cat.config.desc}</p>
+                        </div>
+                      </div>
+                      <p className="text-xs font-medium text-muted-foreground">
+                        {cat.totalCount} {cat.totalCount === 1 ? "item" : "itens"} ·{" "}
+                        <strong className="text-foreground">{formatBRL(cat.totalAmount)}</strong>
                       </p>
-                      {section.id !== "other" && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          title="Excluir categoria"
-                          aria-label={`Excluir categoria ${section.name}`}
-                          disabled={deleteEra.isPending}
-                          onClick={() => {
-                            if (
-                              window.confirm(
-                                `Excluir a categoria ${section.name}? Todos os itens dessa categoria serão removidos.`,
-                              )
-                            )
-                              deleteEra.mutate(section.id);
-                          }}
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      )}
+                    </div>
+
+                    <div className="space-y-10 pl-1 sm:pl-2">
+                      {cat.sections.map((section) => (
+                        <section key={section.id} className="pt-2">
+                          <div className="flex flex-wrap items-end justify-between gap-2 border-b border-border pb-2.5">
+                            <div>
+                              <h3 className="font-display text-2xl font-semibold text-foreground">
+                                {section.name}
+                              </h3>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm text-muted-foreground">
+                                {section.items.length} pcs / itens <span aria-hidden>·</span>{" "}
+                                <strong className="text-foreground">
+                                  {formatBRL(section.items.reduce((n, i) => n + i.amount, 0))}
+                                </strong>
+                              </p>
+                              {section.id !== "other" && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  title="Excluir categoria"
+                                  aria-label={`Excluir categoria ${section.name}`}
+                                  disabled={deleteEra.isPending}
+                                  onClick={() => {
+                                    if (
+                                      window.confirm(
+                                        `Excluir a categoria ${section.name}? Todos os itens dessa categoria serão removidos.`,
+                                      )
+                                    )
+                                      deleteEra.mutate(section.id);
+                                  }}
+                                >
+                                  <Trash2 className="size-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                          {section.items.length ? (
+                            section.items.map((i) => (
+                              <CollectionItem key={i.id} item={i} userId={user.id} />
+                            ))
+                          ) : (
+                            <p className="py-6 text-sm text-muted-foreground">
+                              Nenhum item nesta categoria ainda.
+                            </p>
+                          )}
+                        </section>
+                      ))}
                     </div>
                   </div>
-                  {section.items.length ? (
-                    section.items.map((i) => (
-                      <CollectionItem key={i.id} item={i} userId={user.id} />
-                    ))
-                  ) : (
-                    <p className="py-8 text-sm text-muted-foreground">
-                      Nenhum item nesta categoria ainda.
-                    </p>
-                  )}
-                </section>
-              ))
+                ))}
+              </div>
             ) : (
               <div className="py-16">
                 <Layers3 className="mb-3 size-7 text-primary" />
