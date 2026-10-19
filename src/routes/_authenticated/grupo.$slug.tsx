@@ -5,7 +5,12 @@ import { ArrowLeft, Plus, Layers3, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CollectionForm } from "@/components/collection-form";
 import { CollectionItem } from "@/components/collection-item";
-import { deleteEraCascade, deleteGroupCascade, useCollection } from "@/lib/collection";
+import {
+  deleteEraCascade,
+  deleteGroupCascade,
+  presetEventDate,
+  useCollection,
+} from "@/lib/collection";
 import { formatBRL } from "@/lib/parse-expense";
 import { CoverImage, CoverUploadButton } from "@/components/group-cover";
 import { WishlistTab } from "@/components/wishlist-tab";
