@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Cropper, { type Area } from "react-easy-crop";
-import { RotateCcw, RotateCw, X } from "lucide-react";
+import { RectangleHorizontal, RectangleVertical, RotateCcw, RotateCw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 async function cropToFile(src: string, area: Area, rotation: number): Promise<File> {
@@ -37,17 +37,20 @@ async function cropToFile(src: string, area: Area, rotation: number): Promise<Fi
 export function ImageCropper({
   file,
   aspect,
+  aspectOptions,
   round = false,
   onCancel,
   onDone,
 }: {
   file: File;
   aspect: number;
+  aspectOptions?: { label: string; value: number }[];
   round?: boolean;
   onCancel: () => void;
   onDone: (file: File) => void;
 }) {
   const [src] = useState(() => URL.createObjectURL(file));
+  const [selectedAspect, setSelectedAspect] = useState(aspect);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
@@ -69,7 +72,7 @@ export function ImageCropper({
             crop={crop}
             zoom={zoom}
             rotation={rotation}
-            aspect={aspect}
+            aspect={selectedAspect}
             cropShape={round ? "round" : "rect"}
             onCropChange={setCrop}
             onZoomChange={setZoom}
@@ -77,6 +80,34 @@ export function ImageCropper({
             onCropComplete={(_, px) => setArea(px)}
           />
         </div>
+        {aspectOptions && (
+          <div className="mt-3">
+            <p className="mb-1.5 text-xs font-semibold text-muted-foreground">Formato do corte</p>
+            <div
+              className="inline-flex rounded-md border border-border p-1"
+              role="group"
+              aria-label="Formato do corte"
+            >
+              {aspectOptions.map((option) => {
+                const isSelected = selectedAspect === option.value;
+                const FormatIcon = option.value > 1 ? RectangleHorizontal : RectangleVertical;
+                return (
+                  <Button
+                    key={option.label}
+                    type="button"
+                    size="sm"
+                    variant={isSelected ? "secondary" : "ghost"}
+                    aria-pressed={isSelected}
+                    onClick={() => setSelectedAspect(option.value)}
+                  >
+                    <FormatIcon />
+                    {option.label}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        )}
         <label className="mt-4 block text-xs font-semibold text-muted-foreground">
           Zoom
           <input

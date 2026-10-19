@@ -76,7 +76,7 @@ export function CollectionItem({ item, userId }: { item: Item; userId: string })
             <img
               src={scan.data}
               alt=""
-              className="h-16 w-11 rounded-md border border-border object-cover"
+              className="h-auto w-auto max-h-16 max-w-24 rounded-md border border-border object-contain"
             />
           </button>
         )}

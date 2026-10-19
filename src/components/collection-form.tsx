@@ -477,7 +477,7 @@ export function CollectionForm({
                 <img
                   src={shownImage}
                   alt=""
-                  className="h-28 w-20 rounded-md border border-border object-cover"
+                  className="h-auto w-auto max-h-28 max-w-32 rounded-md border border-border object-contain"
                 />
               )}
               <div className="flex flex-col gap-2">
@@ -530,6 +530,10 @@ export function CollectionForm({
           <ImageCropper
             file={pendingImage}
             aspect={55 / 85}
+            aspectOptions={[
+              { label: "Atual", value: 55 / 85 },
+              { label: "Horizontal", value: 4 / 3 },
+            ]}
             onCancel={() => setPendingImage(null)}
             onDone={(f) => {
               setPendingImage(null);

@@ -14,6 +14,77 @@ import { formatBRL } from "@/lib/parse-expense";
 import { CoverImage, CoverUploadButton } from "@/components/group-cover";
 import { WishlistTab } from "@/components/wishlist-tab";
 
+/** Datas de lançamento de álbuns, fanmeetings, pop-ups e eventos */
+const EVENT_DATES: Record<string, string> = {
+  // Stray Kids — Discografia
+  "THIS & THAT": "2026-08-07",
+  "DO IT": "2025-11-21",
+  "KARMA": "2025-08-22",
+  "HOLLOW": "2025-06-18",
+  "HOP": "2024-12-13",
+  "GIANT": "2024-11-13",
+  "ATE": "2024-07-19",
+  "ROCK-STAR": "2023-11-10",
+  "SOCIAL PATH": "2023-09-06",
+  "5-STAR": "2023-06-02",
+  "THE SOUND": "2023-02-22",
+  "MAXIDENT": "2022-10-07",
+  "CIRCUS": "2022-06-22",
+  "ODDINARY": "2022-03-18",
+  "Christmas EveL": "2021-11-29",
+  "NOEASY": "2021-08-23",
+  "SKZ2021": "2021-12-23",
+  "SKZ2020": "2020-03-18",
+  "ALL IN": "2020-11-04",
+  "IN LIFE": "2020-09-14",
+  "GO LIVE": "2020-06-17",
+  "Clé : LEVANTER": "2019-12-09",
+  "Clé 2 : Yellow Wood": "2019-06-19",
+  "Clé 1 : MIROH": "2019-03-25",
+  "I am YOU": "2018-10-22",
+  "I am WHO": "2018-08-06",
+  "I am NOT": "2018-03-26",
+  "Mixtape": "2018-01-08",
+
+  // Stray Kids — Fanmeetings & Pop-ups
+  "SKZOO EVERYWHERE ALL AROUND THE WORLD": "2026-04-24",
+  "STAY in Our Little House": "2026-03-28",
+  "Do It Pop-Up Store": "2025-11-22",
+  "Stray Kids World Tour POPUP STORE": "2025-10-11",
+  "SKZ 5'CLOCK": "2025-02-14",
+  "HOP (pop-up)": "2024-12-14",
+  "ATE (pop-up)": "2024-07-20",
+  "SKZ TOY WORLD": "2024-04-06",
+  "SKZ'S MAGIC SCHOOL": "2024-03-29",
+  "SKZOO Magic School": "2024-03-14",
+  "PILOT : FOR ★★★★★": "2023-07-01",
+  "THE VICTORY (Japão)": "2023-04-07",
+  "2nd #LoveSTAY 'SKZ'S CHOCOLATE FACTORY'": "2022-02-12",
+  "THE VICTORY": "2022-05-30",
+  "STAYing Home Meeting": "2021-03-18",
+  "1st #LoveSTAY 'SKZ-X'": "2021-02-20",
+
+  // P1Harmony
+  "UNIQUE JAPAN EDITION": "2026-07-29",
+  "P1uspace H : Horror Haven": "2026-07-11",
+  "UNIQUE": "2026-03-12",
+  "P1ustage H : MOST WANTED": "2025-08-09",
+  "DUH!": "2025-05-08",
+  "SAD SONG": "2024-09-20",
+  "Love & P1ece : The Best of P1Harmony": "2024-08-21",
+  "hello82 Tour Merch POP-UP": "2024-05-14",
+  "P1ustage H : UTOP1A": "2024-04-27",
+  "Killin' It": "2024-02-05",
+  "P1Harmony : EX POP-UP": "2023-01-14",
+  "HARMONY : SET IN": "2022-11-30",
+  "HARMONY : ALL IN": "2022-07-20",
+  "HARMONY : ZERO IN": "2022-07-20",
+  "P1ustage H : PEACE": "2022-02-26",
+  "DISHARMONY : FIND OUT": "2022-01-03",
+  "DISHARMONY : BREAK OUT": "2021-04-20",
+  "DISHARMONY : STAND OUT": "2020-10-28",
+};
+
 export const Route = createFileRoute("/_authenticated/grupo/$slug")({
   head: () => ({
     meta: [
@@ -73,11 +144,20 @@ function GroupPage() {
     sections.push({ id: "other", name: "Sem álbum / evento / kit", items: withoutEra });
   sections.forEach((s) => s.items.sort(pendingFirst));
   const pendingCount = (s: (typeof sections)[number]) => s.items.filter((i) => !i.paid).length;
+  const chronological = (a: (typeof sections)[number], b: (typeof sections)[number]) => {
+    const da = EVENT_DATES[a.name] ?? "";
+    const db = EVENT_DATES[b.name] ?? "";
+    if (da && db) return db.localeCompare(da); // Mais recente primeiro
+    if (da) return -1;
+    if (db) return 1;
+    return a.name.localeCompare(b.name);
+  };
   sections.sort((a, b) => {
     const pa = pendingCount(a);
     const pb = pendingCount(b);
     if ((pa > 0) !== (pb > 0)) return pa > 0 ? -1 : 1;
-    return pb - pa;
+    if (pa > 0 && pb > 0 && pa !== pb) return pb - pa;
+    return chronological(a, b);
   });
   return (
     <div className="min-h-screen bg-background">
