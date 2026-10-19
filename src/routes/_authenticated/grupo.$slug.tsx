@@ -68,9 +68,22 @@ function GroupPage() {
   if (withoutEra.length)
     sections.push({ id: "other", name: "Sem álbum / evento / kit", items: withoutEra });
   sections.forEach((s) => s.items.sort(pendingFirst));
-  sections.sort(
-    (a, b) => b.items.filter((i) => !i.paid).length - a.items.filter((i) => !i.paid).length,
-  );
+  const pendingCount = (s: (typeof sections)[number]) => s.items.filter((i) => !i.paid).length;
+  const chronological = (a: (typeof sections)[number], b: (typeof sections)[number]) => {
+    const da = presetEventDate(group?.name ?? "", a.name);
+    const db = presetEventDate(group?.name ?? "", b.name);
+    if (da && db) return db.localeCompare(da);
+    if (da) return -1;
+    if (db) return 1;
+    return 0;
+  };
+  sections.sort((a, b) => {
+    const pa = pendingCount(a);
+    const pb = pendingCount(b);
+    if ((pa > 0) !== (pb > 0)) return pa > 0 ? -1 : 1;
+    if (pa > 0 && pb > 0 && pa !== pb) return pb - pa;
+    return chronological(a, b);
+  });
   return (
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-4xl px-4 pb-20 pt-8 sm:px-8 sm:pt-12">
