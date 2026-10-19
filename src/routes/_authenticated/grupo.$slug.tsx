@@ -52,6 +52,13 @@ function GroupPage() {
   });
   const groupItems = data?.items.filter((i) => i.group_id === group?.id) ?? [];
   const eras = data?.eras.filter((e) => e.group_id === group?.id) ?? [];
+  const pendingFirst = (a: (typeof groupItems)[number], b: (typeof groupItems)[number]) => {
+    if (a.paid !== b.paid) return a.paid ? 1 : -1;
+    if (a.due_date && b.due_date) return a.due_date.localeCompare(b.due_date);
+    if (a.due_date) return -1;
+    if (b.due_date) return 1;
+    return 0;
+  };
   const sections = eras.map((era) => ({
     id: era.id,
     name: era.name,
@@ -60,6 +67,10 @@ function GroupPage() {
   const withoutEra = groupItems.filter((i) => !i.era_id);
   if (withoutEra.length)
     sections.push({ id: "other", name: "Sem álbum / evento / kit", items: withoutEra });
+  sections.forEach((s) => s.items.sort(pendingFirst));
+  sections.sort(
+    (a, b) => b.items.filter((i) => !i.paid).length - a.items.filter((i) => !i.paid).length,
+  );
   return (
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-4xl px-4 pb-20 pt-8 sm:px-8 sm:pt-12">
