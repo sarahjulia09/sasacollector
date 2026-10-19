@@ -161,7 +161,7 @@ function getEraCategory(name: string): EraCategoryKey {
     n.includes("horror haven") ||
     n.includes("most wanted") ||
     n.includes("utop1a") ||
-    n.includes("peace")
+    n.includes("peace") ||
     n.includes("odd & fresh")
   ) {
     return "eventos";
