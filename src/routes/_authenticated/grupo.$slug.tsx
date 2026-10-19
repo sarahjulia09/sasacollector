@@ -8,7 +8,6 @@ import { CollectionItem } from "@/components/collection-item";
 import {
   deleteEraCascade,
   deleteGroupCascade,
-  presetEventDate,
   useCollection,
 } from "@/lib/collection";
 import { formatBRL } from "@/lib/parse-expense";
@@ -74,20 +73,11 @@ function GroupPage() {
     sections.push({ id: "other", name: "Sem álbum / evento / kit", items: withoutEra });
   sections.forEach((s) => s.items.sort(pendingFirst));
   const pendingCount = (s: (typeof sections)[number]) => s.items.filter((i) => !i.paid).length;
-  const chronological = (a: (typeof sections)[number], b: (typeof sections)[number]) => {
-    const da = presetEventDate(group?.name ?? "", a.name);
-    const db = presetEventDate(group?.name ?? "", b.name);
-    if (da && db) return db.localeCompare(da);
-    if (da) return -1;
-    if (db) return 1;
-    return 0;
-  };
   sections.sort((a, b) => {
     const pa = pendingCount(a);
     const pb = pendingCount(b);
     if ((pa > 0) !== (pb > 0)) return pa > 0 ? -1 : 1;
-    if (pa > 0 && pb > 0 && pa !== pb) return pb - pa;
-    return chronological(a, b);
+    return pb - pa;
   });
   return (
     <div className="min-h-screen bg-background">
