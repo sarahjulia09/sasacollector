@@ -1,22 +1,26 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, Pencil, RotateCcw, Trash2 } from "lucide-react";
+import { Check, Clock, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteEraCascade, type Item, useCollection } from "@/lib/collection";
 import { useMediaUrl } from "@/lib/media";
 import { CollectionForm } from "@/components/collection-form";
+import { allPaid, parseStages, STAGE_LABELS, totalCost, type StageKind } from "@/lib/payment-stages";
 import { dueLabel, formatBRL, formatDateParts } from "@/lib/parse-expense";
 
 export function CollectionItem({ item, userId, eraName }: { item: Item; userId: string; eraName?: string }) {
   const client = useQueryClient();
+  const stages = parseStages(item.stages);
   const [editing, setEditing] = useState(false);
   const collection = useCollection(userId);
   const update = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (kind: StageKind | "item") => {
+      const itemPaid = kind === "item" ? !item.item_paid : item.item_paid;
+      const next = stages.map((s) => (s.kind === kind ? { ...s, paid: !s.paid } : s));
       const { error } = await supabase
         .from("expenses")
-        .update({ paid: !item.paid })
+        .update({ item_paid: itemPaid, stages: next, paid: allPaid(itemPaid, next) })
         .eq("id", item.id);
       if (error) throw error;
     },
@@ -87,7 +91,9 @@ export function CollectionItem({ item, userId, eraName }: { item: Item; userId: 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
             <h4 className="break-words font-semibold text-foreground">{item.description}</h4>
-            <strong className="font-display text-lg text-primary">{formatBRL(item.amount)}</strong>
+            <strong className="font-display text-lg text-primary" title="Custo total">
+              {formatBRL(totalCost(item.amount, stages))}
+            </strong>
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {eraName && (
@@ -135,16 +141,6 @@ export function CollectionItem({ item, userId, eraName }: { item: Item; userId: 
               <Button
                 size="sm"
                 variant="ghost"
-                disabled={update.isPending}
-                onClick={() => update.mutate()}
-                title={item.paid ? "Marcar como pendente" : "Marcar como pago"}
-                aria-label={item.paid ? "Marcar como pendente" : "Marcar como pago"}
-              >
-                {item.paid ? <RotateCcw /> : <Check />}
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
                 disabled={remove.isPending}
                 onClick={() => {
                   if (window.confirm(`Excluir ${item.description}?`)) remove.mutate();
@@ -155,6 +151,21 @@ export function CollectionItem({ item, userId, eraName }: { item: Item; userId: 
                 <Trash2 />
               </Button>
             </div>
+          </div>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {[{ kind: "item" as const, amount: item.amount, paid: item.item_paid }, ...stages].map((s) => (
+              <button
+                key={s.kind}
+                type="button"
+                disabled={update.isPending}
+                onClick={() => update.mutate(s.kind)}
+                title={s.paid ? "Marcar como pendente" : "Marcar como pago"}
+                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors ${s.paid ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:border-primary"}`}
+              >
+                {s.paid ? <Check className="size-3" /> : <Clock className="size-3" />}
+                {STAGE_LABELS[s.kind]}: {formatBRL(s.amount)}
+              </button>
+            ))}
           </div>
           {(update.isError || remove.isError) && (
             <p role="alert" className="mt-1 text-xs text-destructive">

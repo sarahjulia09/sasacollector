@@ -84,9 +84,11 @@ export type Database = {
           id: string
           image_path: string | null
           item_detail: string | null
+          item_paid: boolean
           item_type: string | null
           origin: string | null
           paid: boolean
+          stages: Json
           user_id: string | null
         }
         Insert: {
@@ -99,9 +101,11 @@ export type Database = {
           id?: string
           image_path?: string | null
           item_detail?: string | null
+          item_paid?: boolean
           item_type?: string | null
           origin?: string | null
           paid?: boolean
+          stages?: Json
           user_id?: string | null
         }
         Update: {
@@ -114,9 +118,11 @@ export type Database = {
           id?: string
           image_path?: string | null
           item_detail?: string | null
+          item_paid?: boolean
           item_type?: string | null
           origin?: string | null
           paid?: boolean
+          stages?: Json
           user_id?: string | null
         }
         Relationships: [

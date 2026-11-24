@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ImageCropper } from "@/components/image-cropper";
 import { uploadMedia, useMediaUrl } from "@/lib/media";
 import { parseAmount } from "@/lib/parse-expense";
+import { allPaid, parseStages, STAGE_LABELS, STAGE_ORDER, type Stage, type StageKind } from "@/lib/payment-stages";
 import {
   DEFAULT_GROUPS,
   presetErasFor,
@@ -65,6 +66,9 @@ export function CollectionForm({
   const [origin, setOrigin] = useState(item?.origin ?? "");
   const [amount, setAmount] = useState(item ? String(item.amount).replace(".", ",") : "");
   const [dueDate, setDueDate] = useState(item?.due_date ?? "");
+  const [stages, setStages] = useState<{ kind: StageKind; amount: string; due_date: string; paid: boolean }[]>(
+    parseStages(item?.stages).map((st) => ({ ...st, amount: String(st.amount).replace(".", ","), due_date: st.due_date ?? "" })),
+  );
   const [error, setError] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [pendingImage, setPendingImage] = useState<File | null>(null);
@@ -142,6 +146,11 @@ export function CollectionForm({
         amount: parsedAmount,
         dueDate,
       });
+      const parsedStages: Stage[] = stages.map((st) => {
+        const v = parseAmount(st.amount);
+        if (v === null) throw new Error(`Informe o valor de ${STAGE_LABELS[st.kind]}.`);
+        return { kind: st.kind, amount: v, due_date: st.due_date || null, paid: st.paid };
+      });
       let savedGroupId = groupId;
       if (groupId === "new") {
         const slug = slugify(values.groupName);
@@ -204,6 +213,8 @@ export function CollectionForm({
         origin: values.origin || null,
         amount: values.amount,
         due_date: values.dueDate,
+        stages: parsedStages,
+        paid: allPaid(item?.item_paid ?? false, parsedStages),
       };
       const { error: itemError } = editing
         ? await supabase.from("expenses").update(payload).eq("id", item!.id)
@@ -470,6 +481,51 @@ export function CollectionForm({
               className={input}
             />
           </label>
+          <div className={`${label} sm:col-span-2`}>
+            Etapas extras (opcional)
+            {stages.map((st, i) => (
+              <div key={st.kind} className="mt-1 flex flex-wrap items-center gap-2">
+                <span className="w-16 text-sm font-semibold text-primary">{STAGE_LABELS[st.kind]}</span>
+                <input
+                  inputMode="decimal"
+                  aria-label={`Valor ${STAGE_LABELS[st.kind]}`}
+                  placeholder="R$"
+                  value={st.amount}
+                  onChange={(e) => setStages((all) => all.map((x, j) => (j === i ? { ...x, amount: e.target.value } : x)))}
+                  className={`${input} w-24 flex-none`}
+                />
+                <input
+                  type="date"
+                  aria-label={`Prazo ${STAGE_LABELS[st.kind]}`}
+                  value={st.due_date}
+                  onChange={(e) => setStages((all) => all.map((x, j) => (j === i ? { ...x, due_date: e.target.value } : x)))}
+                  className={`${input} w-40 flex-none`}
+                />
+                <Button type="button" size="sm" variant="ghost" aria-label={`Remover ${STAGE_LABELS[st.kind]}`} onClick={() => setStages((all) => all.filter((_, j) => j !== i))}>
+                  <X />
+                </Button>
+              </div>
+            ))}
+            <div className="mt-1 flex flex-wrap gap-2">
+              {STAGE_ORDER.filter((k) => !stages.some((st) => st.kind === k)).map((k) => (
+                <Button
+                  key={k}
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    setStages((all) =>
+                      [...all, { kind: k, amount: "", due_date: "", paid: false }].sort(
+                        (a, b) => STAGE_ORDER.indexOf(a.kind) - STAGE_ORDER.indexOf(b.kind),
+                      ),
+                    )
+                  }
+                >
+                  <Plus /> {STAGE_LABELS[k]}
+                </Button>
+              ))}
+            </div>
+          </div>
           <div className={`${label} sm:col-span-2`}>
             Scan / foto do item (opcional)
             <div className="mt-1 flex items-center gap-3">

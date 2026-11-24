@@ -18,3 +18,5 @@
 - User images (avatars, group covers, wishlist templates) live in the private `media` bucket under `<user_id>/...` and are displayed via short-lived signed URLs; DB columns store the storage path, not a URL. Why: workspace blocks public buckets and paths keep files owner-scoped.
 
 - Keep pending-item ordering in a browser-safe pure helper and reuse CollectionItem for the group mural and binder rows; this shares deadline rules and payment invalidation without duplicating mutations.
+
+- Payment stages: `expenses.item_paid` tracks the base item; optional Frete 1/Taxa/Frete 2 live in `expenses.stages` jsonb, and `paid` is kept as "all active stages paid" via helpers in src/lib/payment-stages.ts. Why: existing pending/totals logic keeps working on `paid`.

@@ -43,6 +43,13 @@
       "when": 1791170221971,
       "tag": "0005_normalize_expense_item_types",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795564217267,
+      "tag": "0006_expense_payment_stages",
+      "breakpoints": true
     }
   ]
 }
