@@ -8,7 +8,7 @@ import { useMediaUrl } from "@/lib/media";
 import { CollectionForm } from "@/components/collection-form";
 import { dueLabel, formatBRL, formatDateParts } from "@/lib/parse-expense";
 
-export function CollectionItem({ item, userId }: { item: Item; userId: string }) {
+export function CollectionItem({ item, userId, eraName }: { item: Item; userId: string; eraName?: string }) {
   const client = useQueryClient();
   const [editing, setEditing] = useState(false);
   const collection = useCollection(userId);
@@ -90,6 +90,11 @@ export function CollectionItem({ item, userId }: { item: Item; userId: string })
             <strong className="font-display text-lg text-primary">{formatBRL(item.amount)}</strong>
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">
+            {eraName && (
+              <span className="max-w-full break-words rounded-sm border border-primary/30 px-2 py-1 text-[11px] font-semibold text-primary">
+                {eraName}
+              </span>
+            )}
             {item.item_type && (
               <span className="rounded-sm bg-primary/10 px-2 py-1 text-[11px] font-semibold text-primary">
                 {item.item_type}

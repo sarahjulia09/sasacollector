@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeft, Plus, Layers3, Trash2, Disc3, Gift, Sparkles, Tag } from "lucide-react";
+import { ArrowLeft, Plus, Layers3, Trash2, Disc3, Gift, Sparkles, Tag, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CollectionForm } from "@/components/collection-form";
 import { CollectionItem } from "@/components/collection-item";
@@ -13,6 +13,7 @@ import {
 import { formatBRL } from "@/lib/parse-expense";
 import { CoverImage, CoverUploadButton } from "@/components/group-cover";
 import { WishlistTab } from "@/components/wishlist-tab";
+import { pendingFirst, pendingItemsByDueDate } from "@/lib/pending-items";
 
 /** Datas de lançamento conhecidas de álbuns e eventos oficiais */
 const EVENT_DATES: Record<string, string> = {
@@ -237,13 +238,7 @@ function GroupPage() {
   const groupItems = data?.items.filter((i) => i.group_id === group?.id) ?? [];
   const eras = data?.eras.filter((e) => e.group_id === group?.id) ?? [];
 
-  const pendingFirst = (a: (typeof groupItems)[number], b: (typeof groupItems)[number]) => {
-    if (a.paid !== b.paid) return a.paid ? 1 : -1;
-    if (a.due_date && b.due_date) return a.due_date.localeCompare(b.due_date);
-    if (a.due_date) return -1;
-    if (b.due_date) return 1;
-    return 0;
-  };
+  const pendingItems = pendingItemsByDueDate(groupItems);
 
   const sections = eras.map((era) => ({
     id: era.id,
@@ -369,6 +364,32 @@ function GroupPage() {
                 </p>
               </div>
             </div>
+            {tab === "colecao" && (
+              <section aria-labelledby="pending-title" className="mt-6 border-t-2 border-primary bg-card px-4 py-5 sm:px-6">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                  <div className="flex items-center gap-2">
+                    <CalendarClock className="size-5 shrink-0 text-primary" />
+                    <h2 id="pending-title" className="font-display text-2xl font-semibold text-primary">
+                      Mural de pendências
+                    </h2>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {pendingItems.length} {pendingItems.length === 1 ? "item pendente" : "itens pendentes"}
+                    {" · "}<strong className="text-primary">{formatBRL(pendingItems.reduce((sum, item) => sum + item.amount, 0))}</strong>
+                  </p>
+                </div>
+                {pendingItems.length ? pendingItems.map((item) => (
+                  <CollectionItem
+                    key={item.id}
+                    item={item}
+                    userId={user.id}
+                    eraName={eras.find((era) => era.id === item.era_id)?.name ?? "Sem álbum / evento / kit"}
+                  />
+                )) : (
+                  <p className="py-5 text-sm text-muted-foreground">Nenhum item pendente neste grupo.</p>
+                )}
+              </section>
+            )}
             <div className="mt-6 flex gap-1 border-b border-border" role="tablist">
               {(["colecao", "wishlist"] as const).map((t) => (
                 <button

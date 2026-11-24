@@ -16,3 +16,5 @@
 - Keep collection groups and eras as user-owned tables, with expense references constrained to the same user and group; use the browser client under the authenticated gate so RLS protects all collection reads and writes.
 
 - User images (avatars, group covers, wishlist templates) live in the private `media` bucket under `<user_id>/...` and are displayed via short-lived signed URLs; DB columns store the storage path, not a URL. Why: workspace blocks public buckets and paths keep files owner-scoped.
+
+- Keep pending-item ordering in a browser-safe pure helper and reuse CollectionItem for the group mural and binder rows; this shares deadline rules and payment invalidation without duplicating mutations.
