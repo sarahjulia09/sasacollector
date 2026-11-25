@@ -13,6 +13,7 @@ export function CollectionItem({ item, userId, eraName }: { item: Item; userId: 
   const client = useQueryClient();
   const stages = parseStages(item.stages);
   const [editing, setEditing] = useState(false);
+  const [showStages, setShowStages] = useState(false);
   const collection = useCollection(userId);
   const update = useMutation({
     mutationFn: async (kind: StageKind | "item") => {
@@ -152,21 +153,43 @@ export function CollectionItem({ item, userId, eraName }: { item: Item; userId: 
               </Button>
             </div>
           </div>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {[{ kind: "item" as const, amount: item.amount, paid: item.item_paid }, ...stages].map((s) => (
-              <button
-                key={s.kind}
-                type="button"
-                disabled={update.isPending}
-                onClick={() => update.mutate(s.kind)}
-                title={s.paid ? "Marcar como pendente" : "Marcar como pago"}
-                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors ${s.paid ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:border-primary"}`}
-              >
-                {s.paid ? <Check className="size-3" /> : <Clock className="size-3" />}
-                {STAGE_LABELS[s.kind]}: {formatBRL(s.amount)}
-              </button>
-            ))}
-          </div>
+          {(() => {
+            const all = [{ kind: "item" as const, amount: item.amount, paid: item.item_paid }, ...stages];
+            const paidCount = all.filter((s) => s.paid).length;
+            const done = paidCount === all.length;
+            return (
+              <div className="mt-2">
+                <button
+                  type="button"
+                  aria-expanded={showStages}
+                  onClick={() => setShowStages((v) => !v)}
+                  className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${done ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:border-primary"}`}
+                >
+                  {done ? <Check className="size-3" /> : <Clock className="size-3" />}
+                  {formatBRL(totalCost(item.amount, stages))} · {done ? "Pago" : `${paidCount} de ${all.length} pagos`}
+                </button>
+                {showStages && (
+                  <div className="mt-2 flex flex-col gap-1 rounded-md border border-border bg-card p-2">
+                    {all.map((s) => (
+                      <button
+                        key={s.kind}
+                        type="button"
+                        disabled={update.isPending}
+                        onClick={() => update.mutate(s.kind)}
+                        className="flex items-center justify-between gap-3 rounded px-2 py-1 text-left text-xs hover:bg-secondary"
+                      >
+                        <span className="inline-flex items-center gap-1.5 font-semibold">
+                          {s.paid ? <Check className="size-3 text-primary" /> : <Clock className="size-3 text-muted-foreground" />}
+                          {STAGE_LABELS[s.kind]}
+                        </span>
+                        <span className={s.paid ? "text-muted-foreground line-through" : "text-foreground"}>{formatBRL(s.amount)}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
           {(update.isError || remove.isError) && (
             <p role="alert" className="mt-1 text-xs text-destructive">
               Não foi possível atualizar. Tente novamente.

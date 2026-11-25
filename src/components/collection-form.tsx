@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ImageCropper } from "@/components/image-cropper";
 import { uploadMedia, useMediaUrl } from "@/lib/media";
 import { parseAmount } from "@/lib/parse-expense";
-import { allPaid, parseStages, STAGE_LABELS, STAGE_ORDER, type Stage, type StageKind } from "@/lib/payment-stages";
+import { allPaid, missingStages, parseStages, SCOPE_STAGES, scopeOf, STAGE_LABELS, STAGE_ORDER, type PurchaseScope, type Stage, type StageKind } from "@/lib/payment-stages";
 import {
   DEFAULT_GROUPS,
   presetErasFor,
@@ -67,8 +67,24 @@ export function CollectionForm({
   const [amount, setAmount] = useState(item ? String(item.amount).replace(".", ",") : "");
   const [dueDate, setDueDate] = useState(item?.due_date ?? "");
   const [stages, setStages] = useState<{ kind: StageKind; amount: string; due_date: string; paid: boolean }[]>(
-    parseStages(item?.stages).map((st) => ({ ...st, amount: String(st.amount).replace(".", ","), due_date: st.due_date ?? "" })),
+    () => {
+      const saved = parseStages(item?.stages).map((st) => ({ ...st, amount: String(st.amount).replace(".", ","), due_date: st.due_date ?? "" }));
+      const req = SCOPE_STAGES[scopeOf(saved)].required;
+      const add = req.filter((k) => !saved.some((s) => s.kind === k)).map((k) => ({ kind: k, amount: "", due_date: "", paid: false }));
+      return [...saved, ...add].sort((a, b) => STAGE_ORDER.indexOf(a.kind) - STAGE_ORDER.indexOf(b.kind));
+    },
   );
+  const scope = scopeOf(stages);
+  const [scopeState, setScopeState] = useState<PurchaseScope>(scope);
+  const switchScope = (next: PurchaseScope) => {
+    setScopeState(next);
+    setStages((all) => {
+      const allowed = [...SCOPE_STAGES[next].required, ...SCOPE_STAGES[next].optional];
+      const kept = all.filter((s) => allowed.includes(s.kind));
+      const add = SCOPE_STAGES[next].required.filter((k) => !kept.some((s) => s.kind === k)).map((k) => ({ kind: k, amount: "", due_date: "", paid: false }));
+      return [...kept, ...add].sort((a, b) => STAGE_ORDER.indexOf(a.kind) - STAGE_ORDER.indexOf(b.kind));
+    });
+  };
   const [error, setError] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [pendingImage, setPendingImage] = useState<File | null>(null);
@@ -146,6 +162,8 @@ export function CollectionForm({
         amount: parsedAmount,
         dueDate,
       });
+      const missing = missingStages(scopeState, stages.map((st) => st.kind));
+      if (missing.length) throw new Error(`Informe ${missing.join(", ")}.`);
       const parsedStages: Stage[] = stages.map((st) => {
         const v = parseAmount(st.amount);
         if (v === null) throw new Error(`Informe o valor de ${STAGE_LABELS[st.kind]}.`);
@@ -482,32 +500,52 @@ export function CollectionForm({
             />
           </label>
           <div className={`${label} sm:col-span-2`}>
-            Etapas extras (opcional)
-            {stages.map((st, i) => (
-              <div key={st.kind} className="mt-1 flex flex-wrap items-center gap-2">
-                <span className="w-16 text-sm font-semibold text-primary">{STAGE_LABELS[st.kind]}</span>
-                <input
-                  inputMode="decimal"
-                  aria-label={`Valor ${STAGE_LABELS[st.kind]}`}
-                  placeholder="R$"
-                  value={st.amount}
-                  onChange={(e) => setStages((all) => all.map((x, j) => (j === i ? { ...x, amount: e.target.value } : x)))}
-                  className={`${input} w-24 flex-none`}
-                />
-                <input
-                  type="date"
-                  aria-label={`Prazo ${STAGE_LABELS[st.kind]}`}
-                  value={st.due_date}
-                  onChange={(e) => setStages((all) => all.map((x, j) => (j === i ? { ...x, due_date: e.target.value } : x)))}
-                  className={`${input} w-40 flex-none`}
-                />
-                <Button type="button" size="sm" variant="ghost" aria-label={`Remover ${STAGE_LABELS[st.kind]}`} onClick={() => setStages((all) => all.filter((_, j) => j !== i))}>
-                  <X />
-                </Button>
-              </div>
-            ))}
-            <div className="mt-1 flex flex-wrap gap-2">
-              {STAGE_ORDER.filter((k) => !stages.some((st) => st.kind === k)).map((k) => (
+            Tipo de compra
+            <div role="tablist" className="mt-1 grid grid-cols-2 gap-1 rounded-md bg-secondary p-1">
+              {(["nacional", "internacional"] as const).map((sc) => (
+                <button
+                  key={sc}
+                  type="button"
+                  role="tab"
+                  aria-selected={scopeState === sc}
+                  onClick={() => switchScope(sc)}
+                  className={`rounded px-3 py-1.5 text-sm font-semibold ${scopeState === sc ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}
+                >
+                  {sc === "nacional" ? "Nacional" : "Internacional / CEG"}
+                </button>
+              ))}
+            </div>
+            {stages.map((st, i) => {
+              const required = SCOPE_STAGES[scopeState].required.includes(st.kind);
+              return (
+                <div key={st.kind} className="mt-2 flex flex-wrap items-center gap-2">
+                  <span className="w-32 text-sm font-semibold text-primary">{STAGE_LABELS[st.kind]}{required ? " *" : ""}</span>
+                  <input
+                    inputMode="decimal"
+                    required={required}
+                    aria-label={`Valor ${STAGE_LABELS[st.kind]}`}
+                    placeholder="R$"
+                    value={st.amount}
+                    onChange={(e) => setStages((all) => all.map((x, j) => (j === i ? { ...x, amount: e.target.value } : x)))}
+                    className={`${input} w-24 flex-none`}
+                  />
+                  <input
+                    type="date"
+                    aria-label={`Prazo ${STAGE_LABELS[st.kind]}`}
+                    value={st.due_date}
+                    onChange={(e) => setStages((all) => all.map((x, j) => (j === i ? { ...x, due_date: e.target.value } : x)))}
+                    className={`${input} w-40 flex-none`}
+                  />
+                  {!required && (
+                    <Button type="button" size="sm" variant="ghost" aria-label={`Remover ${STAGE_LABELS[st.kind]}`} onClick={() => setStages((all) => all.filter((_, j) => j !== i))}>
+                      <X />
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {SCOPE_STAGES[scopeState].optional.filter((k) => !stages.some((st) => st.kind === k)).map((k) => (
                 <Button
                   key={k}
                   type="button"
