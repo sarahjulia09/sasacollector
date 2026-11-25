@@ -1,3 +1,4 @@
+import { joinOrigin, splitOrigin } from "@/lib/communities";
 import { useState, type FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
@@ -63,7 +64,8 @@ export function CollectionForm({
     TYPES.includes(item?.item_type as ItemType) ? (item!.item_type as ItemType) : "Regular",
   );
   const [detail, setDetail] = useState(item?.item_detail ?? "");
-  const [origin, setOrigin] = useState(item?.origin ?? "");
+  const [origin, setOrigin] = useState(splitOrigin(item?.origin).community);
+  const [ceg, setCeg] = useState(splitOrigin(item?.origin).ceg);
   const [amount, setAmount] = useState(item ? String(item.amount).replace(".", ",") : "");
   const [dueDate, setDueDate] = useState(item?.due_date ?? "");
   const [stages, setStages] = useState<{ kind: StageKind; amount: string; due_date: string; paid: boolean }[]>(
@@ -158,7 +160,7 @@ export function CollectionForm({
         eraName,
         itemType,
         detail,
-        origin,
+        origin: joinOrigin(origin, ceg),
         amount: parsedAmount,
         dueDate,
       });
@@ -467,12 +469,23 @@ export function CollectionForm({
           </label>
 
           <label className={label}>
-            Comunidade / CEG
+            Comunidade / GOM
             <input
-              maxLength={120}
+              maxLength={60}
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
-              placeholder="Ex.: CEG Coreia"
+              placeholder="Ex.: Nana"
+              className={input}
+            />
+          </label>
+
+          <label className={label}>
+            CEG (opcional)
+            <input
+              maxLength={58}
+              value={ceg}
+              onChange={(e) => setCeg(e.target.value)}
+              placeholder="Ex.: Mercari 3.0"
               className={input}
             />
           </label>

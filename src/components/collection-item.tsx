@@ -114,7 +114,7 @@ export function CollectionItem({ item, userId, eraName }: { item: Item; userId: 
             )}
             {item.origin && (
               <span className="rounded-sm border border-border px-2 py-1 text-[11px] font-medium text-foreground">
-                {item.origin}
+                {item.origin.replace(" :: ", " · ")}
               </span>
             )}
             <span

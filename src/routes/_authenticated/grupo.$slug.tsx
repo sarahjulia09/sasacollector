@@ -12,6 +12,7 @@ import {
 } from "@/lib/collection";
 import { formatBRL } from "@/lib/parse-expense";
 import { CoverImage, CoverUploadButton } from "@/components/group-cover";
+import { CommunitiesTab } from "@/components/communities-tab";
 import { WishlistTab } from "@/components/wishlist-tab";
 import { pendingFirst, pendingItemsByDueDate } from "@/lib/pending-items";
 
@@ -221,7 +222,7 @@ function GroupPage() {
   const navigate = useNavigate();
   const query = useCollection(user.id);
   const [adding, setAdding] = useState(false);
-  const [tab, setTab] = useState<"colecao" | "wishlist">("colecao");
+  const [tab, setTab] = useState<"colecao" | "comunidades" | "wishlist">("colecao");
   const data = query.data;
   const group = data?.groups.find((g) => g.slug === slug);
   const deleteEra = useMutation({
@@ -391,7 +392,7 @@ function GroupPage() {
               </section>
             )}
             <div className="mt-6 flex gap-1 border-b border-border" role="tablist">
-              {(["colecao", "wishlist"] as const).map((t) => (
+              {(["colecao", "comunidades", "wishlist"] as const).map((t) => (
                 <button
                   key={t}
                   role="tab"
@@ -399,12 +400,14 @@ function GroupPage() {
                   onClick={() => setTab(t)}
                   className={`-mb-px border-b-2 px-4 py-2 text-sm font-semibold ${tab === t ? "border-primary text-primary" : "border-transparent text-muted-foreground"}`}
                 >
-                  {t === "colecao" ? "Coleção & Gastos" : "Wishlist"}
+                  {t === "colecao" ? "Coleção & Gastos" : t === "comunidades" ? "Comunidades & CEGs" : "Wishlist"}
                 </button>
               ))}
             </div>
             {tab === "wishlist" ? (
               <WishlistTab userId={user.id} groupId={group.id} />
+            ) : tab === "comunidades" ? (
+              <CommunitiesTab items={groupItems} eras={eras} userId={user.id} />
             ) : categorizedSections.length ? (
               <div className="space-y-14 pt-8">
                 {categorizedSections.map((cat) => (
