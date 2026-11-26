@@ -125,7 +125,8 @@ export function formatBRL(n: number): string {
 }
 
 /** Formats a yyyy-mm-dd date without timezone surprises. */
-export function formatDateParts(iso: string): { day: string; monthShort: string; full: string } {
+export function formatDateParts(iso: string | null): { day: string; monthShort: string; full: string } {
+  if (!iso) return { day: "—", monthShort: "", full: "Sem prazo" };
   const [ys, ms, ds] = iso.split("-");
   const y = Number(ys),
     m = Number(ms),
@@ -151,9 +152,10 @@ export function daysUntil(iso: string, today = new Date()): number {
 }
 
 export function dueLabel(
-  iso: string,
+  iso: string | null,
   today = new Date(),
 ): { text: string; tone: "overdue" | "soon" | "later" } {
+  if (!iso) return { text: "Sem prazo definido", tone: "later" };
   const days = daysUntil(iso, today);
   if (days < 0)
     return {

@@ -1,4 +1,5 @@
-- [ ] Fretes sob demanda e correção retroativa das etapas ainda sem cobrança.
-- [ ] Separação retroativa de Comunidade / CEG e totais por etapas.
-- [ ] Instalação na tela inicial com ícone Dwaekki enviado.
-- [ ] Validar cadastro, pagamento, filtros e ícones; salvar alterações.
+- [x] Fretes sob demanda e correção retroativa das etapas ainda sem cobrança.
+- [x] Separação retroativa de Comunidade / CEG na leitura e edição, com totais por etapas (sem regravar origens antigas).
+- [x] Instalação na tela inicial com ícone Dwaekki enviado, sem modo offline.
+- [x] Validar regras com 17 testes, tela de entrada em celular/computador e carregamento de todos os ícones.
+- [ ] Validar cadastro, pagamento e filtros com conta conectada — autorização para conta temporária de teste recusada; falta sessão autorizada.

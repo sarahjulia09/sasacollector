@@ -4,7 +4,7 @@ type DueItem = { paid: boolean; due_date: string | null; amount?: number; item_p
 
 function deadline(item: DueItem) {
   return typeof item.item_paid === "boolean" && typeof item.amount === "number"
-    ? nextPaymentDate({ ...item, amount: item.amount, item_paid: item.item_paid })
+    ? nextPaymentDate({ ...item, amount: item.amount, item_paid: item.item_paid, stages: item.stages })
     : item.due_date;
 }
 

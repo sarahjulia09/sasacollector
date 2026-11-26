@@ -27,3 +27,13 @@ test("items without deadlines stay visible after dated pending items", () => {
     { id: "dated", paid: false, due_date: "2026-11-25" },
   ]).map((item) => item.id), ["dated", "undated"]);
 });
+
+test("paid item dates do not outrank an earlier shipping charge", () => {
+  const items = [
+    { id: "later-shipping", paid: false, amount: 45, item_paid: true, due_date: "2026-11-01", stages: [
+      { kind: "frete1", amount: 18, due_date: "2026-11-30", paid: false },
+    ] },
+    { id: "earlier-item", paid: false, amount: 20, item_paid: false, due_date: "2026-11-28", stages: [] },
+  ];
+  assert.deepEqual(pendingItemsByDueDate(items).map((item) => item.id), ["earlier-item", "later-shipping"]);
+});

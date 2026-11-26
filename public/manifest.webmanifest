@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "sasa collector",
+  "short_name": "sasa collector",
+  "description": "Sua coleção e seus gastos, com valores e prazos.",
+  "lang": "pt-BR",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#5C2135",
+  "background_color": "#FAF7EE",
+  "icons": [
+    {
+      "src": "/__l5e/assets-v1/8b46abbf-b510-4f2b-964e-e5da33b00e2d/dwaekki-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/__l5e/assets-v1/942dce2f-31ea-4085-8ed3-13189506c6d1/dwaekki-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
