@@ -1,4 +1,5 @@
 import type { Item } from "@/lib/collection";
+import { parseStages, pendingCost, totalCost } from "@/lib/payment-stages";
 
 /** Comunidade e CEG ficam juntas em expenses.origin como "Comunidade :: CEG". */
 const SEP = " :: ";
@@ -7,9 +8,10 @@ export const NO_CEG = "Sem CEG específica";
 
 export function splitOrigin(origin: string | null | undefined): { community: string; ceg: string } {
   const raw = (origin ?? "").trim();
-  const idx = raw.indexOf("::");
+  const separator = raw.includes("::") ? "::" : "/";
+  const idx = raw.indexOf(separator);
   if (idx < 0) return { community: raw, ceg: "" };
-  return { community: raw.slice(0, idx).trim(), ceg: raw.slice(idx + 2).trim() };
+  return { community: raw.slice(0, idx).trim(), ceg: raw.slice(idx + separator.length).trim() };
 }
 
 export function joinOrigin(community: string, ceg: string): string {
@@ -42,8 +44,8 @@ export function groupByCommunity(items: Item[]): CommunityBox[] {
         name,
         items: list,
         cegs,
-        pending: list.filter((i) => !i.paid).reduce((n, i) => n + i.amount, 0),
-        total: list.reduce((n, i) => n + i.amount, 0),
+        pending: list.reduce((n, i) => n + pendingCost(i.amount, i.item_paid ?? i.paid, parseStages(i.stages)), 0),
+        total: list.reduce((n, i) => n + totalCost(i.amount, parseStages(i.stages)), 0),
       };
     })
     .sort((a, b) => (b.pending > 0 ? 1 : 0) - (a.pending > 0 ? 1 : 0) || a.name.localeCompare(b.name));

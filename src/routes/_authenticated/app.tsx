@@ -10,6 +10,7 @@ import { dueLabel, formatBRL } from "@/lib/parse-expense";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfileAvatarButton } from "@/components/profile-avatar";
 import { CoverImage } from "@/components/group-cover";
+import { pendingCost, pendingPayments, parseStages, totalCost } from "@/lib/payment-stages";
 
 export const Route = createFileRoute("/_authenticated/app")({
   head: () => ({
@@ -46,24 +47,24 @@ function Dashboard() {
   const metrics = [
     {
       label: "Total pendente",
-      amount: pending.reduce((n, i) => n + i.amount, 0),
+      amount: pending.reduce((n, i) => n + pendingCost(i.amount, i.item_paid, parseStages(i.stages)), 0),
       tone: "text-primary",
     },
     {
       label: "Atrasados",
-      amount: pending
+      amount: pending.flatMap(pendingPayments)
         .filter((i) => dueLabel(i.due_date).tone === "overdue")
         .reduce((n, i) => n + i.amount, 0),
       tone: "text-destructive",
     },
     {
       label: "Próximos 7 dias",
-      amount: pending
+      amount: pending.flatMap(pendingPayments)
         .filter((i) => dueLabel(i.due_date).tone === "soon")
         .reduce((n, i) => n + i.amount, 0),
       tone: "text-foreground",
     },
-    { label: "Total", amount: items.reduce((n, i) => n + i.amount, 0), tone: "text-primary" },
+    { label: "Total", amount: items.reduce((n, i) => n + totalCost(i.amount, parseStages(i.stages)), 0), tone: "text-primary" },
   ];
   const ungrouped = items.filter((i) => !i.group_id);
 
@@ -179,7 +180,7 @@ function Dashboard() {
                               {groupItems.length} {groupItems.length === 1 ? "item" : "itens"}
                             </span>
                             <strong className="text-primary">
-                              {formatBRL(groupItems.reduce((n, i) => n + i.amount, 0))}
+                              {formatBRL(groupItems.reduce((n, i) => n + totalCost(i.amount, parseStages(i.stages)), 0))}
                             </strong>
                           </div>
                         </div>

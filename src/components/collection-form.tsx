@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ImageCropper } from "@/components/image-cropper";
 import { uploadMedia, useMediaUrl } from "@/lib/media";
 import { parseAmount } from "@/lib/parse-expense";
-import { allPaid, missingStages, parseStages, SCOPE_STAGES, scopeOf, STAGE_LABELS, STAGE_ORDER, type PurchaseScope, type Stage, type StageKind } from "@/lib/payment-stages";
+import { allPaid, parseStages, SCOPE_STAGES, scopeOf, STAGE_LABELS, STAGE_ORDER, type PurchaseScope, type Stage, type StageKind } from "@/lib/payment-stages";
 import {
   DEFAULT_GROUPS,
   presetErasFor,
@@ -61,7 +61,7 @@ export function CollectionForm({
   const [eraValue, setEraValue] = useState(item?.era_id ?? "");
   const [newEra, setNewEra] = useState("");
   const [itemType, setItemType] = useState<ItemType>(
-    TYPES.includes(item?.item_type as ItemType) ? (item!.item_type as ItemType) : "Regular",
+    item && TYPES.includes(item.item_type as ItemType) ? (item.item_type as ItemType) : "Regular",
   );
   const [detail, setDetail] = useState(item?.item_detail ?? "");
   const [origin, setOrigin] = useState(splitOrigin(item?.origin).community);
@@ -71,9 +71,7 @@ export function CollectionForm({
   const [stages, setStages] = useState<{ kind: StageKind; amount: string; due_date: string; paid: boolean }[]>(
     () => {
       const saved = parseStages(item?.stages).map((st) => ({ ...st, amount: String(st.amount).replace(".", ","), due_date: st.due_date ?? "" }));
-      const req = SCOPE_STAGES[scopeOf(saved)].required;
-      const add = req.filter((k) => !saved.some((s) => s.kind === k)).map((k) => ({ kind: k, amount: "", due_date: "", paid: false }));
-      return [...saved, ...add].sort((a, b) => STAGE_ORDER.indexOf(a.kind) - STAGE_ORDER.indexOf(b.kind));
+      return saved;
     },
   );
   const scope = scopeOf(stages);
@@ -83,8 +81,7 @@ export function CollectionForm({
     setStages((all) => {
       const allowed = [...SCOPE_STAGES[next].required, ...SCOPE_STAGES[next].optional];
       const kept = all.filter((s) => allowed.includes(s.kind));
-      const add = SCOPE_STAGES[next].required.filter((k) => !kept.some((s) => s.kind === k)).map((k) => ({ kind: k, amount: "", due_date: "", paid: false }));
-      return [...kept, ...add].sort((a, b) => STAGE_ORDER.indexOf(a.kind) - STAGE_ORDER.indexOf(b.kind));
+      return kept;
     });
   };
   const [error, setError] = useState("");
@@ -164,8 +161,6 @@ export function CollectionForm({
         amount: parsedAmount,
         dueDate,
       });
-      const missing = missingStages(scopeState, stages.map((st) => st.kind));
-      if (missing.length) throw new Error(`Informe ${missing.join(", ")}.`);
       const parsedStages: Stage[] = stages.map((st) => {
         const v = parseAmount(st.amount);
         if (v === null) throw new Error(`Informe o valor de ${STAGE_LABELS[st.kind]}.`);
@@ -236,8 +231,8 @@ export function CollectionForm({
         stages: parsedStages,
         paid: allPaid(item?.item_paid ?? false, parsedStages),
       };
-      const { error: itemError } = editing
-        ? await supabase.from("expenses").update(payload).eq("id", item!.id)
+      const { error: itemError } = item
+        ? await supabase.from("expenses").update(payload).eq("id", item.id).eq("user_id", userId)
         : await supabase.from("expenses").insert({ ...payload, user_id: userId });
       if (itemError) {
         const errorCode = itemError.code ? ` (${itemError.code})` : "";
@@ -516,26 +511,26 @@ export function CollectionForm({
             Tipo de compra
             <div role="tablist" className="mt-1 grid grid-cols-2 gap-1 rounded-md bg-secondary p-1">
               {(["nacional", "internacional"] as const).map((sc) => (
-                <button
+                <Button
                   key={sc}
                   type="button"
                   role="tab"
+                  variant="ghost"
                   aria-selected={scopeState === sc}
                   onClick={() => switchScope(sc)}
                   className={`rounded px-3 py-1.5 text-sm font-semibold ${scopeState === sc ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}
                 >
                   {sc === "nacional" ? "Nacional" : "Internacional / CEG"}
-                </button>
+                </Button>
               ))}
             </div>
             {stages.map((st, i) => {
-              const required = SCOPE_STAGES[scopeState].required.includes(st.kind);
               return (
                 <div key={st.kind} className="mt-2 flex flex-wrap items-center gap-2">
-                  <span className="w-32 text-sm font-semibold text-primary">{STAGE_LABELS[st.kind]}{required ? " *" : ""}</span>
+                  <span className="w-32 text-sm font-semibold text-primary">{STAGE_LABELS[st.kind]}</span>
                   <input
                     inputMode="decimal"
-                    required={required}
+                    required
                     aria-label={`Valor ${STAGE_LABELS[st.kind]}`}
                     placeholder="R$"
                     value={st.amount}
@@ -549,11 +544,9 @@ export function CollectionForm({
                     onChange={(e) => setStages((all) => all.map((x, j) => (j === i ? { ...x, due_date: e.target.value } : x)))}
                     className={`${input} w-40 flex-none`}
                   />
-                  {!required && (
                     <Button type="button" size="sm" variant="ghost" aria-label={`Remover ${STAGE_LABELS[st.kind]}`} onClick={() => setStages((all) => all.filter((_, j) => j !== i))}>
                       <X />
                     </Button>
-                  )}
                 </div>
               );
             })}

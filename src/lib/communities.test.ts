@@ -13,6 +13,17 @@ describe("communities", () => {
     expect(joinOrigin("Nana", "")).toBe("Nana");
     expect(joinOrigin("Nana", "Mercari 3.0")).toBe("Nana :: Mercari 3.0");
   });
+  it("separa cadastros antigos na primeira barra sem recadastrar", () => {
+    expect(splitOrigin(" Nana / Mercari 3.0 ")).toEqual({ community: "Nana", ceg: "Mercari 3.0" });
+    expect(splitOrigin("Bia / Batch 2 / Coreia")).toEqual({ community: "Bia", ceg: "Batch 2 / Coreia" });
+    expect(splitOrigin("Nana :: Mercari / 3.0")).toEqual({ community: "Nana", ceg: "Mercari / 3.0" });
+  });
+  it("soma apenas cobranças pendentes, não o item já pago", () => {
+    const purchase = { ...item("Nana / Mercari 3.0", false, 45), item_paid: true,
+      stages: [{ kind: "frete1", amount: 18, paid: false, due_date: null }] } as Item;
+    expect(groupByCommunity([purchase])[0]?.pending).toBe(18);
+    expect(groupByCommunity([purchase])[0]?.total).toBe(63);
+  });
   it("agrupa itens por comunidade com filtros de CEG", () => {
     const boxes = groupByCommunity([item("Nana :: Mercari 3.0"), item("Nana :: Cacarecos Anardilyas", true), item("Nana")]);
     expect(boxes).toHaveLength(1);

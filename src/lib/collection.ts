@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { allPaid, parseStages } from "@/lib/payment-stages";
 
 export type Group = Tables<"collection_groups">;
 export type Era = Tables<"collection_eras">;
@@ -285,7 +286,11 @@ export function useCollection(userId: string) {
         supabase.from("expenses").select("*").order("due_date"),
       ]);
       if (e.error || i.error) throw e.error ?? i.error;
-      return { groups: groups as Group[], eras: e.data as Era[], items: i.data as Item[] };
+      const items = (i.data ?? []).map((item) => {
+        const stages = parseStages(item.stages);
+        return { ...item, paid: allPaid(item.item_paid, stages), stages };
+      });
+      return { groups: groups as Group[], eras: e.data as Era[], items: items as Item[] };
     },
   });
 }

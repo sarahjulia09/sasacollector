@@ -15,6 +15,7 @@ import { CoverImage, CoverUploadButton } from "@/components/group-cover";
 import { CommunitiesTab } from "@/components/communities-tab";
 import { WishlistTab } from "@/components/wishlist-tab";
 import { pendingFirst, pendingItemsByDueDate } from "@/lib/pending-items";
+import { pendingCost, parseStages, totalCost } from "@/lib/payment-stages";
 
 /** Datas de lançamento conhecidas de álbuns e eventos oficiais */
 const EVENT_DATES: Record<string, string> = {
@@ -279,7 +280,7 @@ function GroupPage() {
         config: CATEGORY_CONFIG[catKey],
         sections: sortSections(catSections),
         totalAmount: catSections.reduce(
-          (sum, s) => sum + s.items.reduce((n, i) => n + i.amount, 0),
+          (sum, s) => sum + s.items.reduce((n, i) => n + totalCost(i.amount, parseStages(i.stages)), 0),
           0
         ),
         totalCount: catSections.reduce((sum, s) => sum + s.items.length, 0),
@@ -355,13 +356,13 @@ function GroupPage() {
               <div>
                 <p className="text-xs text-muted-foreground">Total no grupo</p>
                 <p className="mt-1 font-display text-2xl font-semibold text-primary">
-                  {formatBRL(groupItems.reduce((n, i) => n + i.amount, 0))}
+                  {formatBRL(groupItems.reduce((n, i) => n + totalCost(i.amount, parseStages(i.stages)), 0))}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Pendente</p>
                 <p className="mt-1 font-display text-2xl font-semibold">
-                  {formatBRL(groupItems.filter((i) => !i.paid).reduce((n, i) => n + i.amount, 0))}
+                  {formatBRL(groupItems.reduce((n, i) => n + pendingCost(i.amount, i.item_paid, parseStages(i.stages)), 0))}
                 </p>
               </div>
             </div>
@@ -376,7 +377,7 @@ function GroupPage() {
                   </div>
                   <p className="text-sm text-muted-foreground">
                     {pendingItems.length} {pendingItems.length === 1 ? "item pendente" : "itens pendentes"}
-                    {" · "}<strong className="text-primary">{formatBRL(pendingItems.reduce((sum, item) => sum + item.amount, 0))}</strong>
+                    {" · "}<strong className="text-primary">{formatBRL(pendingItems.reduce((sum, item) => sum + pendingCost(item.amount, item.item_paid, parseStages(item.stages)), 0))}</strong>
                   </p>
                 </div>
                 {pendingItems.length ? pendingItems.map((item) => (
@@ -441,7 +442,7 @@ function GroupPage() {
                               <p className="text-sm text-muted-foreground">
                                 {section.items.length} pcs / itens <span aria-hidden>·</span>{" "}
                                 <strong className="text-foreground">
-                                  {formatBRL(section.items.reduce((n, i) => n + i.amount, 0))}
+                                  {formatBRL(section.items.reduce((n, i) => n + totalCost(i.amount, parseStages(i.stages)), 0))}
                                 </strong>
                               </p>
                               {section.id !== "other" && (

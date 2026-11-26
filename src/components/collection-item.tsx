@@ -6,7 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { deleteEraCascade, type Item, useCollection } from "@/lib/collection";
 import { useMediaUrl } from "@/lib/media";
 import { CollectionForm } from "@/components/collection-form";
-import { allPaid, parseStages, STAGE_LABELS, totalCost, type StageKind } from "@/lib/payment-stages";
+import { allPaid, nextPaymentDate, pendingPayments, parseStages, STAGE_LABELS, totalCost, type StageKind } from "@/lib/payment-stages";
+import { joinOrigin, splitOrigin } from "@/lib/communities";
 import { dueLabel, formatBRL, formatDateParts } from "@/lib/parse-expense";
 
 export function CollectionItem({ item, userId, eraName }: { item: Item; userId: string; eraName?: string }) {
@@ -54,8 +55,10 @@ export function CollectionItem({ item, userId, eraName }: { item: Item; userId: 
   });
   const scan = useMediaUrl(item.image_path);
   const [zoomed, setZoomed] = useState(false);
-  const due = dueLabel(item.due_date);
-  const date = formatDateParts(item.due_date);
+  const pending = pendingPayments(item);
+  const dueDate = item.paid ? item.due_date : nextPaymentDate(item);
+  const due = dueLabel(dueDate);
+  const date = formatDateParts(dueDate);
   return (
     <article className="border-b border-border py-4 last:border-b-0">
       {zoomed && scan.data && (
@@ -114,13 +117,13 @@ export function CollectionItem({ item, userId, eraName }: { item: Item; userId: 
             )}
             {item.origin && (
               <span className="rounded-sm border border-border px-2 py-1 text-[11px] font-medium text-foreground">
-                {item.origin.replace(" :: ", " · ")}
+              {(() => { const origin = splitOrigin(item.origin); return joinOrigin(origin.community, origin.ceg).replace(" :: ", " · "); })()}
               </span>
             )}
             <span
               className={`rounded-sm px-2 py-1 text-[11px] font-semibold ${item.paid ? "bg-muted text-muted-foreground" : "bg-warning/25 text-warning-foreground"}`}
             >
-              {item.paid ? "Pago" : "Pendente"}
+              {item.paid ? "Pago" : `${pending.map((s) => STAGE_LABELS[s.kind]).join(", ")} pendente`}
             </span>
           </div>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
@@ -159,21 +162,25 @@ export function CollectionItem({ item, userId, eraName }: { item: Item; userId: 
             const done = paidCount === all.length;
             return (
               <div className="mt-2">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
+                  size="sm"
                   aria-expanded={showStages}
                   onClick={() => setShowStages((v) => !v)}
                   className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${done ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:border-primary"}`}
                 >
                   {done ? <Check className="size-3" /> : <Clock className="size-3" />}
                   {formatBRL(totalCost(item.amount, stages))} · {done ? "Pago" : `${paidCount} de ${all.length} pagos`}
-                </button>
+                </Button>
                 {showStages && (
                   <div className="mt-2 flex flex-col gap-1 rounded-md border border-border bg-card p-2">
                     {all.map((s) => (
-                      <button
+                      <Button
                         key={s.kind}
                         type="button"
+                        variant="ghost"
+                        size="sm"
                         disabled={update.isPending}
                         onClick={() => update.mutate(s.kind)}
                         className="flex items-center justify-between gap-3 rounded px-2 py-1 text-left text-xs hover:bg-secondary"
@@ -183,7 +190,7 @@ export function CollectionItem({ item, userId, eraName }: { item: Item; userId: 
                           {STAGE_LABELS[s.kind]}
                         </span>
                         <span className={s.paid ? "text-muted-foreground line-through" : "text-foreground"}>{formatBRL(s.amount)}</span>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 )}

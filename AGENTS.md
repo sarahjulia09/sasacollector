@@ -19,4 +19,6 @@
 
 - Keep pending-item ordering in a browser-safe pure helper and reuse CollectionItem for the group mural and binder rows; this shares deadline rules and payment invalidation without duplicating mutations.
 
-- Payment stages: `expenses.item_paid` tracks the base item; optional Frete 1/Taxa/Frete 2 live in `expenses.stages` jsonb, and `paid` is kept as "all active stages paid" via helpers in src/lib/payment-stages.ts. Why: existing pending/totals logic keeps working on `paid`.
+- Payment stages: keep base-item payment in `item_paid`, active extra charges in `stages`, and derive aggregate payment, totals and deadlines through browser-safe helpers; ignore unpaid zero-value undated placeholders. Why: unquoted shipping must not create debt or overwrite the base deadline.
+- Parse legacy slash origins and canonical ` :: ` origins in the shared community helper, writing only the canonical form. Why: existing users need no recataloging.
+- Home-screen installation uses a manifest and static icons only, with no app-shell service worker. Why: installation does not require offline caching and previews must stay fresh.
