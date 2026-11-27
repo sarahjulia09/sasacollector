@@ -117,7 +117,7 @@ export function WishlistTab({ userId, groupId }: { userId: string; groupId: stri
         </div>
       ) : (
         <p className="border-y border-border py-10 text-sm text-muted-foreground">
-          Nenhum template ainda. Envie a imagem do template dos photocards que você quer.
+          Nenhum template por aqui. Jura que não tem nenhum pc que não sai da sua cabeça?
         </p>
       )}
 

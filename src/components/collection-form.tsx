@@ -64,6 +64,7 @@ export function CollectionForm({
     item && TYPES.includes(item.item_type as ItemType) ? (item.item_type as ItemType) : "Regular",
   );
   const [detail, setDetail] = useState(item?.item_detail ?? "");
+  const [itemPaid, setItemPaid] = useState(item?.item_paid ?? false);
   const [origin, setOrigin] = useState(splitOrigin(item?.origin).community);
   const [ceg, setCeg] = useState(splitOrigin(item?.origin).ceg);
   const [amount, setAmount] = useState(item ? String(item.amount).replace(".", ",") : "");
@@ -142,6 +143,8 @@ export function CollectionForm({
   const isDiscographyEra = discography.some(
     (name) => name.trim().toLowerCase() === eraName.trim().toLowerCase(),
   );
+  const isFanmade = /fan\s*-?\s*made/i.test(eraName);
+  const showVersions = isDiscographyEra && !isFanmade && itemType === "Regular";
   const versionsPresets = presetVersionsFor(groupName, eraName);
   const popupPresets = presetPopupsFor(groupName);
   const fanmeetingPresets = presetFanmeetingsFor(groupName);
@@ -223,13 +226,14 @@ export function CollectionForm({
         description: values.description,
         group_id: savedGroupId,
         era_id: savedEraId,
-        item_type: values.itemType,
+        item_type: isFanmade ? null : values.itemType,
         item_detail: values.detail || null,
         origin: values.origin || null,
         amount: values.amount,
         due_date: values.dueDate,
         stages: parsedStages,
-        paid: allPaid(item?.item_paid ?? false, parsedStages),
+        item_paid: itemPaid,
+        paid: allPaid(itemPaid, parsedStages),
       };
       const { error: itemError } = item
         ? await supabase.from("expenses").update(payload).eq("id", item.id).eq("user_id", userId)
@@ -426,6 +430,7 @@ export function CollectionForm({
               />
             </label>
           )}
+          {!isFanmade && (
           <label className={label}>
             Tipo de item
             <select
@@ -441,9 +446,10 @@ export function CollectionForm({
               ))}
             </select>
           </label>
+          )}
           <label className={label}>
-            {isDiscographyEra ? "Versão do álbum" : "Descrição"}
-            {isDiscographyEra ? (
+            {showVersions ? "Versão do álbum" : "Descrição"}
+            {showVersions ? (
               <select className={input} value={detail} onChange={(e) => setDetail(e.target.value)}>
                 <option value="">Selecione a versão</option>
                 {versionsPresets?.map((version) => (
@@ -507,6 +513,10 @@ export function CollectionForm({
               className={input}
             />
           </label>
+          <label className="inline-flex items-center gap-2 self-end pb-2 text-sm text-foreground">
+            <input type="checkbox" checked={itemPaid} onChange={(e) => setItemPaid(e.target.checked)} className="size-4 accent-primary" />
+            Item já pago
+          </label>
           <div className={`${label} sm:col-span-2`}>
             Tipo de compra
             <div role="tablist" className="mt-1 grid grid-cols-2 gap-1 rounded-md bg-secondary p-1">
@@ -544,6 +554,10 @@ export function CollectionForm({
                     onChange={(e) => setStages((all) => all.map((x, j) => (j === i ? { ...x, due_date: e.target.value } : x)))}
                     className={`${input} w-40 flex-none`}
                   />
+                  <label className="inline-flex items-center gap-1.5 text-sm font-normal text-foreground">
+                    <input type="checkbox" aria-label={`${STAGE_LABELS[st.kind]} já pago`} checked={st.paid} onChange={(e) => setStages((all) => all.map((x, j) => (j === i ? { ...x, paid: e.target.checked } : x)))} className="size-4 accent-primary" />
+                    Já pago
+                  </label>
                     <Button type="button" size="sm" variant="ghost" aria-label={`Remover ${STAGE_LABELS[st.kind]}`} onClick={() => setStages((all) => all.filter((_, j) => j !== i))}>
                       <X />
                     </Button>

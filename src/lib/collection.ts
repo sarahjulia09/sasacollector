@@ -15,6 +15,7 @@ export const DEFAULT_GROUPS = [
 /** Eras pré-definidas por grupo (chave = slug do grupo), da mais recente para a mais antiga. */
 export const PRESET_ERAS: Record<string, string[]> = {
   "stray-kids": [
+    "SUIATSU",
     "THIS & THAT",
     "DO IT",
     "HOLLOW",
@@ -61,6 +62,7 @@ export const PRESET_ERAS: Record<string, string[]> = {
 /** Versões dos álbuns pré-definidas. */
 export const PRESET_VERSIONS: Record<string, Record<string, string[]>> = {
   "stray-kids": {
+    SUIATSU: ["Limited Ver. A", "Limited Ver. B", "Regular Ver.", "FC Ver.", "Member Solo Ver."],
     "THIS & THAT": [
       "THIS Ver.",
       "THAT Ver.",

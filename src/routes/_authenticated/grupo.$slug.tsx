@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeft, Plus, Layers3, Trash2, Disc3, Gift, Sparkles, Tag, CalendarClock } from "lucide-react";
+import { ArrowLeft, Plus, Layers3, Trash2, Disc3, Gift, Sparkles, Tag, CalendarClock, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CollectionForm } from "@/components/collection-form";
 import { CollectionItem } from "@/components/collection-item";
@@ -20,6 +20,7 @@ import { pendingCost, parseStages, totalCost } from "@/lib/payment-stages";
 /** Datas de lançamento conhecidas de álbuns e eventos oficiais */
 const EVENT_DATES: Record<string, string> = {
   // Stray Kids — Discografia
+  "SUIATSU": "2026-11-01",
   "THIS & THAT": "2026-08-07",
   "DO IT": "2025-11-21",
   "KARMA": "2025-08-22",
@@ -224,6 +225,7 @@ function GroupPage() {
   const query = useCollection(user.id);
   const [adding, setAdding] = useState(false);
   const [tab, setTab] = useState<"colecao" | "comunidades" | "wishlist">("colecao");
+  const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
   const data = query.data;
   const group = data?.groups.find((g) => g.slug === slug);
   const deleteEra = useMutation({
@@ -242,11 +244,13 @@ function GroupPage() {
 
   const pendingItems = pendingItemsByDueDate(groupItems);
 
-  const sections = eras.map((era) => ({
-    id: era.id,
-    name: era.name,
-    items: groupItems.filter((i) => i.era_id === era.id),
-  }));
+  const sections = eras
+    .map((era) => ({
+      id: era.id,
+      name: era.name,
+      items: groupItems.filter((i) => i.era_id === era.id),
+    }))
+    .filter((s) => s.items.length > 0);
   const withoutEra = groupItems.filter((i) => !i.era_id);
   if (withoutEra.length)
     sections.push({ id: "other", name: "Sem álbum / evento / kit", items: withoutEra });
@@ -254,6 +258,7 @@ function GroupPage() {
   sections.forEach((s) => s.items.sort(pendingFirst));
 
   const pendingCount = (s: (typeof sections)[number]) => s.items.filter((i) => !i.paid).length;
+  const isOpen = (s: (typeof sections)[number]) => openMap[s.id] ?? pendingCount(s) > 0;
 
   const sortSections = (list: typeof sections) => {
     return [...list].sort((a, b) => {
@@ -388,7 +393,7 @@ function GroupPage() {
                     eraName={eras.find((era) => era.id === item.era_id)?.name ?? "Sem álbum / evento / kit"}
                   />
                 )) : (
-                  <p className="py-5 text-sm text-muted-foreground">Nenhum item pendente neste grupo.</p>
+                  <p className="py-5 text-sm text-muted-foreground">Nenhum pagamento pendente! O bolso descansa até o próximo frete surpresa (ou taxa da receita).</p>
                 )}
               </section>
             )}
@@ -411,6 +416,10 @@ function GroupPage() {
               <CommunitiesTab items={groupItems} eras={eras} userId={user.id} />
             ) : categorizedSections.length ? (
               <div className="space-y-14 pt-8">
+                <div className="-mb-8 flex justify-end gap-3 text-xs font-medium text-primary">
+                  <button type="button" className="hover:underline" onClick={() => setOpenMap(Object.fromEntries(sections.map((x) => [x.id, true])))}>Expandir todas</button>
+                  <button type="button" className="hover:underline" onClick={() => setOpenMap(Object.fromEntries(sections.map((x) => [x.id, false])))}>Recolher todas</button>
+                </div>
                 {categorizedSections.map((cat) => (
                   <div key={cat.key} className="space-y-8">
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-primary/30 pb-2.5">
@@ -429,15 +438,26 @@ function GroupPage() {
                       </p>
                     </div>
 
-                    <div className="space-y-10 pl-1 sm:pl-2">
+                    <div className="space-y-3 pl-1 sm:pl-2">
                       {cat.sections.map((section) => (
-                        <section key={section.id} className="pt-2">
-                          <div className="flex flex-wrap items-end justify-between gap-2 border-b border-border pb-2.5">
-                            <div>
-                              <h3 className="font-display text-2xl font-semibold text-foreground">
+                        <section key={section.id} className="rounded-md border border-border bg-card px-3 sm:px-4">
+                          <div className="flex flex-wrap items-center justify-between gap-2 py-2.5">
+                            <button
+                              type="button"
+                              aria-expanded={isOpen(section)}
+                              onClick={() => setOpenMap((m) => ({ ...m, [section.id]: !isOpen(section) }))}
+                              className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                            >
+                              <ChevronDown className={`size-4 shrink-0 text-primary transition-transform ${isOpen(section) ? "rotate-180" : ""}`} />
+                              <h3 className="min-w-0 break-words font-display text-xl font-semibold text-foreground">
                                 {section.name}
                               </h3>
-                            </div>
+                              {pendingCount(section) > 0 && (
+                                <span className="shrink-0 rounded-full bg-warning/25 px-2 py-0.5 text-[11px] font-semibold text-warning-foreground">
+                                  {pendingCount(section)} a pagar
+                                </span>
+                              )}
+                            </button>
                             <div className="flex items-center gap-2">
                               <p className="text-sm text-muted-foreground">
                                 {section.items.length} pcs / itens <span aria-hidden>·</span>{" "}
@@ -467,14 +487,12 @@ function GroupPage() {
                               )}
                             </div>
                           </div>
-                          {section.items.length ? (
-                            section.items.map((i) => (
-                              <CollectionItem key={i.id} item={i} userId={user.id} />
-                            ))
-                          ) : (
-                            <p className="py-6 text-sm text-muted-foreground">
-                              Nenhum item nesta categoria ainda.
-                            </p>
+                          {isOpen(section) && (
+                            <div className="border-t border-border">
+                              {section.items.map((i) => (
+                                <CollectionItem key={i.id} item={i} userId={user.id} />
+                              ))}
+                            </div>
                           )}
                         </section>
                       ))}
@@ -486,7 +504,7 @@ function GroupPage() {
               <div className="py-16">
                 <Layers3 className="mb-3 size-7 text-primary" />
                 <h2 className="font-display text-xl font-semibold">
-                  Este binder ainda está vazio.
+                  Nada por aqui... quem me dera ter esse autocontrole.
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">Adicione um item para começar.</p>
               </div>

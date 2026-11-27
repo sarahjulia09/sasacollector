@@ -24,7 +24,7 @@ export function AvatarImage({
       {isUpload && url.data ? (
         <img src={url.data} alt="" className="size-full object-cover" />
       ) : mascot ? (
-        <span aria-hidden>{mascot.emoji}</span>
+        <img src={mascot.image} alt="" className="size-full object-cover" />
       ) : (
         <span aria-hidden>🐺</span>
       )}
@@ -96,9 +96,7 @@ export function ProfileAvatarButton({ userId, username }: { userId: string; user
                   onClick={() => save.mutate(`skzoo:${m.id}`)}
                   className={`flex flex-col items-center gap-1 rounded-md border p-2 text-xs hover:border-primary ${current === `skzoo:${m.id}` ? "border-primary bg-secondary" : "border-border"}`}
                 >
-                  <span className="text-3xl" aria-hidden>
-                    {m.emoji}
-                  </span>
+                  <img src={m.image} alt="" className="size-14 rounded-full object-cover" />
                   <span className="font-medium">{m.name}</span>
                 </button>
               ))}

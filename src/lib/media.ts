@@ -1,16 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import wolfchanImg from "@/assets/skzoo-wolfchan.png.asset.json";
+import leebitImg from "@/assets/skzoo-leebit.png.asset.json";
+import dwaekkiImg from "@/assets/skzoo-dwaekki.png.asset.json";
+import jiniretImg from "@/assets/skzoo-jiniret.png.asset.json";
+import hanquokkaImg from "@/assets/skzoo-hanquokka.png.asset.json";
+import bbokariImg from "@/assets/skzoo-bbokari.png.asset.json";
+import puppymImg from "@/assets/skzoo-puppym.png.asset.json";
+import foxinyImg from "@/assets/skzoo-foxiny.png.asset.json";
 
 /** Mascotes SKZOO disponíveis como ícone de perfil. Valor salvo: "skzoo:<id>". */
 export const SKZOO = [
-  { id: "wolfchan", name: "Wolf Chan", member: "Bang Chan", emoji: "🐺" },
-  { id: "leebit", name: "Leebit", member: "Lee Know", emoji: "🐰" },
-  { id: "dwaekki", name: "Dwaekki", member: "Changbin", emoji: "🐷" },
-  { id: "jiniret", name: "Jiniret", member: "Hyunjin", emoji: "🦦" },
-  { id: "hanquokka", name: "Han Quokka", member: "Han", emoji: "🐹" },
-  { id: "bbokari", name: "BbokAri", member: "Felix", emoji: "🐥" },
-  { id: "puppym", name: "PuppyM", member: "Seungmin", emoji: "🐶" },
-  { id: "foxiny", name: "FoxI.Ny", member: "I.N", emoji: "🦊" },
+  { id: "wolfchan", name: "Wolf Chan", member: "Bang Chan", emoji: "🐺", image: wolfchanImg.url },
+  { id: "leebit", name: "Leebit", member: "Lee Know", emoji: "🐰", image: leebitImg.url },
+  { id: "dwaekki", name: "Dwaekki", member: "Changbin", emoji: "🐷", image: dwaekkiImg.url },
+  { id: "jiniret", name: "Jiniret", member: "Hyunjin", emoji: "🦦", image: jiniretImg.url },
+  { id: "hanquokka", name: "Han Quokka", member: "Han", emoji: "🐹", image: hanquokkaImg.url },
+  { id: "bbokari", name: "BbokAri", member: "Felix", emoji: "🐥", image: bbokariImg.url },
+  { id: "puppym", name: "PuppyM", member: "Seungmin", emoji: "🐶", image: puppymImg.url },
+  { id: "foxiny", name: "FoxI.Ny", member: "I.N", emoji: "🦊", image: foxinyImg.url },
 ] as const;
 
 /** Envia um arquivo para a pasta do usuário e devolve o caminho salvo. */
