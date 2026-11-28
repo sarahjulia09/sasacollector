@@ -1,5 +1,5 @@
-- [x] Fretes sob demanda e correção retroativa das etapas ainda sem cobrança.
-- [x] Separação retroativa de Comunidade / CEG na leitura e edição, com totais por etapas (sem regravar origens antigas).
-- [x] Instalação na tela inicial com ícone Dwaekki enviado, sem modo offline.
-- [x] Validar regras com 17 testes, tela de entrada em celular/computador e carregamento de todos os ícones.
-- [ ] Validar cadastro, pagamento e filtros com conta conectada — autorização para conta temporária de teste recusada; falta sessão autorizada.
+- [ ] Mural central com 5 pendências, filtros e remoção do mural nos grupos.
+- [ ] Situação automática do transporte no lugar de Ver extrato.
+- [ ] Navegação inferior e telas Coleção, Wishlist e Perfil com troca segura de PIN.
+- [ ] Wishlist interativa com pins WTB, OTW e HAVE, filtros e progresso.
+- [ ] Testar fluxos conectados e salvar as alterações.
