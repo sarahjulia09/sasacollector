@@ -1,5 +1,6 @@
-- [ ] Mural central com 5 pendências, filtros e remoção do mural nos grupos.
-- [ ] Situação automática do transporte no lugar de Ver extrato.
-- [ ] Navegação inferior e telas Coleção, Wishlist e Perfil com troca segura de PIN.
-- [ ] Wishlist interativa com pins WTB, OTW e HAVE, filtros e progresso.
-- [ ] Testar fluxos conectados e salvar as alterações.
+- [x] Mural central com 5 pendências, filtros e remoção do mural nos grupos.
+- [x] Situação automática do transporte no lugar de Ver extrato.
+- [x] Navegação inferior e telas Coleção, Wishlist e Perfil com troca segura de PIN.
+- [x] Wishlist interativa com pins WTB, OTW e HAVE, filtros e progresso.
+- [ ] Validar regras e telas; salvar alterações.
+- [ ] Validar fluxos conectados — criação de conta temporária de teste recusada; falta sessão autorizada.

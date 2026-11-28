@@ -22,3 +22,7 @@
 - Payment stages: keep base-item payment in `item_paid`, active extra charges in `stages`, and derive aggregate payment, totals and deadlines through browser-safe helpers; ignore unpaid zero-value undated placeholders. Why: unquoted shipping must not create debt or overwrite the base deadline.
 - Parse legacy slash origins and canonical ` :: ` origins in the shared community helper, writing only the canonical form. Why: existing users need no recataloging.
 - Home-screen installation uses a manifest and static icons only, with no app-shell service worker. Why: installation does not require offline caching and previews must stay fresh.
+- Keep app-wide navigation in the authenticated layout with distinct home, collection, wishlist and profile routes; shared collection components preserve one set of mutations.
+- Derive transport estimates only from active financial stages in a pure helper; do not store a manual shipping status or claim payment confirms physical delivery.
+- Store normalized wishlist marker coordinates and status in owner-scoped rows referencing a private template; RLS checks both marker ownership and template ownership.
+- PIN changes must verify the current credential before updating the password, retain the existing username credential convention, and clear PIN fields after success.

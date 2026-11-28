@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeft, Plus, Layers3, Trash2, Disc3, Gift, Sparkles, Tag, CalendarClock, ChevronDown } from "lucide-react";
+import { ArrowLeft, Plus, Layers3, Trash2, Disc3, Gift, Sparkles, Tag, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CollectionForm } from "@/components/collection-form";
 import { CollectionItem } from "@/components/collection-item";
@@ -14,7 +14,7 @@ import { formatBRL } from "@/lib/parse-expense";
 import { CoverImage, CoverUploadButton } from "@/components/group-cover";
 import { CommunitiesTab } from "@/components/communities-tab";
 import { WishlistTab } from "@/components/wishlist-tab";
-import { pendingFirst, pendingItemsByDueDate } from "@/lib/pending-items";
+import { pendingFirst } from "@/lib/pending-items";
 import { pendingCost, parseStages, totalCost } from "@/lib/payment-stages";
 
 /** Datas de lançamento conhecidas de álbuns e eventos oficiais */
@@ -242,7 +242,6 @@ function GroupPage() {
   const groupItems = data?.items.filter((i) => i.group_id === group?.id) ?? [];
   const eras = data?.eras.filter((e) => e.group_id === group?.id) ?? [];
 
-  const pendingItems = pendingItemsByDueDate(groupItems);
 
   const sections = eras
     .map((era) => ({
@@ -295,7 +294,7 @@ function GroupPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-4xl px-4 pb-20 pt-8 sm:px-8 sm:pt-12">
+      <main className="mx-auto max-w-4xl px-4 pb-28 pt-8 sm:px-8 sm:pt-12">
         <Link
           to="/app"
           className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
@@ -371,32 +370,6 @@ function GroupPage() {
                 </p>
               </div>
             </div>
-            {tab === "colecao" && (
-              <section aria-labelledby="pending-title" className="mt-6 border-t-2 border-primary bg-card px-4 py-5 sm:px-6">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-                  <div className="flex items-center gap-2">
-                    <CalendarClock className="size-5 shrink-0 text-primary" />
-                    <h2 id="pending-title" className="font-display text-2xl font-semibold text-primary">
-                      Mural de pendências
-                    </h2>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {pendingItems.length} {pendingItems.length === 1 ? "item pendente" : "itens pendentes"}
-                    {" · "}<strong className="text-primary">{formatBRL(pendingItems.reduce((sum, item) => sum + pendingCost(item.amount, item.item_paid, parseStages(item.stages)), 0))}</strong>
-                  </p>
-                </div>
-                {pendingItems.length ? pendingItems.map((item) => (
-                  <CollectionItem
-                    key={item.id}
-                    item={item}
-                    userId={user.id}
-                    eraName={eras.find((era) => era.id === item.era_id)?.name ?? "Sem álbum / evento / kit"}
-                  />
-                )) : (
-                  <p className="py-5 text-sm text-muted-foreground">Nenhum pagamento pendente! O bolso descansa até o próximo frete surpresa (ou taxa da receita).</p>
-                )}
-              </section>
-            )}
             <div className="mt-6 flex gap-1 border-b border-border" role="tablist">
               {(["colecao", "comunidades", "wishlist"] as const).map((t) => (
                 <button

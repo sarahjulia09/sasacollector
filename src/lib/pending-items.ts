@@ -21,3 +21,7 @@ export function pendingFirst(a: DueItem, b: DueItem) {
 export function pendingItemsByDueDate<T extends DueItem>(items: readonly T[]): T[] {
   return items.filter((item) => !item.paid).sort(pendingFirst);
 }
+export function pendingMuralItems<T extends DueItem & { group_id?: string | null }>(items: readonly T[], groupId: string | null, expanded: boolean): T[] {
+  const sorted = pendingItemsByDueDate(items).filter((item) => groupId === null || item.group_id === groupId);
+  return expanded ? sorted : sorted.slice(0, 5);
+}

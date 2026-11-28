@@ -13,6 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedColecaoRouteImport } from './routes/_authenticated/colecao'
+import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedWishlistRouteImport } from './routes/_authenticated/wishlist'
 import { Route as AuthenticatedGrupoSlugRouteImport } from './routes/_authenticated/grupo.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -34,6 +37,21 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   path: '/app',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedColecaoRoute = AuthenticatedColecaoRouteImport.update({
+  id: '/colecao',
+  path: '/colecao',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWishlistRoute = AuthenticatedWishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedGrupoSlugRoute = AuthenticatedGrupoSlugRouteImport.update({
   id: '/grupo/$slug',
   path: '/grupo/$slug',
@@ -44,12 +62,18 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/app': typeof AuthenticatedAppRoute
+  '/colecao': typeof AuthenticatedColecaoRoute
+  '/perfil': typeof AuthenticatedPerfilRoute
+  '/wishlist': typeof AuthenticatedWishlistRoute
   '/grupo/$slug': typeof AuthenticatedGrupoSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/app': typeof AuthenticatedAppRoute
+  '/colecao': typeof AuthenticatedColecaoRoute
+  '/perfil': typeof AuthenticatedPerfilRoute
+  '/wishlist': typeof AuthenticatedWishlistRoute
   '/grupo/$slug': typeof AuthenticatedGrupoSlugRoute
 }
 export interface FileRoutesById {
@@ -58,19 +82,39 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
+  '/_authenticated/colecao': typeof AuthenticatedColecaoRoute
+  '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
+  '/_authenticated/wishlist': typeof AuthenticatedWishlistRoute
   '/_authenticated/grupo/$slug': typeof AuthenticatedGrupoSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/app' | '/grupo/$slug'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/app'
+    | '/colecao'
+    | '/perfil'
+    | '/wishlist'
+    | '/grupo/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/app' | '/grupo/$slug'
+  to:
+    | '/'
+    | '/auth'
+    | '/app'
+    | '/colecao'
+    | '/perfil'
+    | '/wishlist'
+    | '/grupo/$slug'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/app'
+    | '/_authenticated/colecao'
+    | '/_authenticated/perfil'
+    | '/_authenticated/wishlist'
     | '/_authenticated/grupo/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -110,6 +154,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/colecao': {
+      id: '/_authenticated/colecao'
+      path: '/colecao'
+      fullPath: '/colecao'
+      preLoaderRoute: typeof AuthenticatedColecaoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/perfil': {
+      id: '/_authenticated/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof AuthenticatedPerfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/wishlist': {
+      id: '/_authenticated/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof AuthenticatedWishlistRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/grupo/$slug': {
       id: '/_authenticated/grupo/$slug'
       path: '/grupo/$slug'
@@ -122,11 +187,17 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRoute
+  AuthenticatedColecaoRoute: typeof AuthenticatedColecaoRoute
+  AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
+  AuthenticatedWishlistRoute: typeof AuthenticatedWishlistRoute
   AuthenticatedGrupoSlugRoute: typeof AuthenticatedGrupoSlugRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRoute,
+  AuthenticatedColecaoRoute: AuthenticatedColecaoRoute,
+  AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
+  AuthenticatedWishlistRoute: AuthenticatedWishlistRoute,
   AuthenticatedGrupoSlugRoute: AuthenticatedGrupoSlugRoute,
 }
 

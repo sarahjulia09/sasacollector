@@ -475,7 +475,7 @@ export function CollectionForm({
               maxLength={60}
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
-              placeholder="Ex.: Nana"
+              placeholder="Ex.: sarinha cegs"
               className={input}
             />
           </label>

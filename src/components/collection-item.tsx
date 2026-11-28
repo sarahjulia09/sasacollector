@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, Clock, Pencil, Sparkles, Trash2 } from "lucide-react";
+import { Check, Clock, Pencil, Sparkles, Trash2, Package, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteEraCascade, type Item, useCollection } from "@/lib/collection";
 import { useMediaUrl } from "@/lib/media";
 import { CollectionForm } from "@/components/collection-form";
 import { allPaid, nextPaymentDate, pendingPayments, parseStages, STAGE_LABELS, totalCost, type StageKind } from "@/lib/payment-stages";
+import { transportStatus } from "@/lib/transport-status";
 import { joinOrigin, splitOrigin } from "@/lib/communities";
 import { dueLabel, formatBRL, formatDateParts } from "@/lib/parse-expense";
 
@@ -63,6 +64,7 @@ export function CollectionItem({ item, userId, eraName }: { item: Item; userId: 
   });
   const scan = useMediaUrl(item.image_path);
   const [zoomed, setZoomed] = useState(false);
+  const status = transportStatus(item.stages);
   const pending = pendingPayments(item);
   const dueDate = item.paid ? item.due_date : nextPaymentDate(item);
   const due = dueLabel(dueDate);
@@ -192,23 +194,21 @@ export function CollectionItem({ item, userId, eraName }: { item: Item; userId: 
                     <Check className="size-3" /> Pago · {formatBRL(totalCost(item.amount, stages))}
                   </span>
                 )}
-                <button
-                  type="button"
-                  onClick={() => setShowStages(true)}
-                  className="text-xs font-medium text-primary underline-offset-2 hover:underline"
-                >
-                  Ver extrato
-                </button>
+                <Button type="button" size="sm" variant="link" onClick={() => setShowStages(true)} className="h-7 px-0 text-xs" aria-label={`Situação de ${item.description}: ${status}`}>
+                  <Package className="size-3" /> {status}
+                </Button>
                 {showStages && (
                   <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/40" onClick={() => setShowStages(false)}>
                     <div
                       role="dialog"
                       aria-label={`Extrato de ${item.description}`}
-                      className="w-full max-w-lg rounded-t-2xl bg-card p-5 pb-8 shadow-lg"
+                      className="max-h-[85dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-card p-5 pb-8 shadow-lg"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border" />
+                      <div className="mb-3 flex items-center justify-between"><strong className="text-primary">{status}</strong><Button variant="ghost" size="icon" aria-label="Fechar extrato" onClick={() => setShowStages(false)}><X /></Button></div>
                       <h3 className="font-display text-xl font-semibold text-foreground">{item.description}</h3>
+                      <p className="mb-3 text-xs text-muted-foreground">Situação estimada pelas cobranças; não confirma entrega.</p>
                       <p className="mb-3 text-sm text-muted-foreground">Total {formatBRL(totalCost(item.amount, stages))}</p>
                       <div className="flex flex-col gap-1">
                         {all.map((st) => (

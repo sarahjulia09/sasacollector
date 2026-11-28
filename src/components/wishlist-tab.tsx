@@ -4,6 +4,7 @@ import { Check, Plus, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadMedia, useMediaUrl } from "@/lib/media";
+import { WishlistTemplate } from "@/components/wishlist-template";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Wish = Tables<"group_wishlists">;
@@ -65,7 +66,7 @@ export function WishlistTab({ userId, groupId }: { userId: string; groupId: stri
         .eq("id", w.id);
       if (error) throw error;
     },
-    onSuccess: () => list.refetch(),
+    onSuccess: (_data, w) => { setViewing({ ...w, done: !w.done }); return list.refetch(); },
   });
   const remove = useMutation({
     mutationFn: async (w: Wish) => {
@@ -95,7 +96,7 @@ export function WishlistTab({ userId, groupId }: { userId: string; groupId: stri
 
       {list.isLoading ? (
         <p className="text-sm text-muted-foreground">Carregando…</p>
-      ) : list.data?.length ? (
+      ) : list.isError ? <p role="alert" className="py-8 text-sm text-destructive">Não foi possível carregar os templates. <Button variant="link" onClick={() => list.refetch()}>Tentar novamente</Button></p> : list.data?.length ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {list.data.map((w) => (
             <button
@@ -183,11 +184,11 @@ export function WishlistTab({ userId, groupId }: { userId: string; groupId: stri
 
       {viewing && (
         <div
-          className="fixed inset-0 z-50 flex flex-col bg-foreground/90 p-3"
+          role="dialog" aria-modal="true" aria-label={viewing.title} className="fixed inset-0 z-50 flex flex-col bg-background p-3 sm:p-6"
           onClick={() => setViewing(null)}
         >
           <div
-            className="mb-2 flex items-center justify-between gap-2 text-background"
+            className="mb-2 flex items-center justify-between gap-2 text-foreground"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="font-semibold">{viewing.title}</p>
@@ -195,10 +196,8 @@ export function WishlistTab({ userId, groupId }: { userId: string; groupId: stri
               <Button
                 size="sm"
                 variant="secondary"
-                onClick={() => {
-                  toggle.mutate(viewing);
-                  setViewing({ ...viewing, done: !viewing.done });
-                }}
+                disabled={toggle.isPending}
+                onClick={() => toggle.mutate(viewing)}
               >
                 <Check /> {viewing.done ? "Reabrir" : "Completo"}
               </Button>
@@ -219,10 +218,9 @@ export function WishlistTab({ userId, groupId }: { userId: string; groupId: stri
               </Button>
             </div>
           </div>
-          <div className="flex-1 overflow-auto" onClick={(e) => e.stopPropagation()}>
-            <WishImage path={viewing.image_path} className="mx-auto max-w-none w-full sm:w-auto" />
-          </div>
-          {viewing.notes && <p className="mt-2 text-sm text-background">{viewing.notes}</p>}
+          <WishlistTemplate key={viewing.id} userId={userId} wish={viewing} />
+          {(toggle.isError || remove.isError) && <p role="alert" className="text-sm text-destructive">Não foi possível atualizar o template. Tente novamente.</p>}
+          {viewing.notes && <p className="mt-2 text-sm text-muted-foreground">{viewing.notes}</p>}
         </div>
       )}
     </section>

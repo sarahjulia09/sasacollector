@@ -1,0 +1,6 @@
+CREATE TABLE public.wishlist_pins (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), wishlist_id uuid NOT NULL REFERENCES public.group_wishlists(id) ON DELETE CASCADE, user_id uuid NOT NULL, x double precision NOT NULL CHECK (x >= 0 AND x <= 1), y double precision NOT NULL CHECK (y >= 0 AND y <= 1), status text NOT NULL DEFAULT 'WTB' CHECK (status IN ('WTB','OTW','HAVE')), created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.wishlist_pins TO authenticated;
+GRANT ALL ON public.wishlist_pins TO service_role;
+ALTER TABLE public.wishlist_pins ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Own template pins" ON public.wishlist_pins FOR ALL TO authenticated USING (user_id = auth.uid() AND EXISTS (SELECT 1 FROM public.group_wishlists w WHERE w.id = wishlist_id AND w.user_id = auth.uid())) WITH CHECK (user_id = auth.uid() AND EXISTS (SELECT 1 FROM public.group_wishlists w WHERE w.id = wishlist_id AND w.user_id = auth.uid()));
+CREATE INDEX wishlist_pins_owner_template_idx ON public.wishlist_pins(user_id,wishlist_id);

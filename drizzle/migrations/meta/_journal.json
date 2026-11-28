@@ -50,6 +50,13 @@
       "when": 1795564217267,
       "tag": "0006_expense_payment_stages",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795836708810,
+      "tag": "0007_wishlist_interactive_pins",
+      "breakpoints": true
     }
   ]
 }

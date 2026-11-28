@@ -35,6 +35,12 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-wish-wtb: var(--wish-wtb);
+  --color-wish-wtb-foreground: var(--wish-wtb-foreground);
+  --color-wish-otw: var(--wish-otw);
+  --color-wish-otw-foreground: var(--wish-otw-foreground);
+  --color-wish-have: var(--wish-have);
+  --color-wish-have-foreground: var(--wish-have-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -43,6 +49,12 @@
 }
 
 :root {
+  --wish-wtb: oklch(0.33 0.09 2);
+  --wish-wtb-foreground: oklch(0.98 0.01 95);
+  --wish-otw: oklch(0.82 0.13 80);
+  --wish-otw-foreground: oklch(0.25 0.04 70);
+  --wish-have: oklch(0.43 0.07 160);
+  --wish-have-foreground: oklch(0.98 0.01 95);
   --radius: 0.75rem;
   --background: oklch(0.975 0.012 90);
   --foreground: oklch(0.26 0.03 60);
@@ -102,3 +114,5 @@
     font-family: var(--font-sans);
   }
 }
+
+@media (prefers-reduced-motion: reduce) { .animate-ping { animation: none; } }
